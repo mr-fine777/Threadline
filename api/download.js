@@ -53,11 +53,23 @@ module.exports = async (req, res) => {
 
     // Forward status and headers
     res.statusCode = upstream.status || 502;
-    upstream.headers.forEach((value, name) => {
-      const lower = name.toLowerCase();
-      if (['transfer-encoding', 'content-encoding', 'content-length'].includes(lower)) return;
-      res.setHeader(name, value);
-    });
+    try {
+      // Use entries() to safely iterate headers in all runtimes
+      for (const [name, value] of upstream.headers.entries()) {
+        const lower = name.toLowerCase();
+        if (['transfer-encoding', 'content-encoding', 'content-length'].includes(lower)) continue;
+        res.setHeader(name, value);
+      }
+    } catch (hdrErr) {
+      console.warn('Could not iterate upstream headers, falling back to forEach if available', hdrErr && hdrErr.message);
+      if (typeof upstream.headers.forEach === 'function') {
+        upstream.headers.forEach((value, name) => {
+          const lower = name.toLowerCase();
+          if (['transfer-encoding', 'content-encoding', 'content-length'].includes(lower)) return;
+          res.setHeader(name, value);
+        });
+      }
+    }
 
     // If upstream returned no body (e.g., HEAD), end here
     if (!upstream.body) {

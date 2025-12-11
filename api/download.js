@@ -2,11 +2,11 @@
 // Simple serverless proxy that forwards /api/download?videoId=... to the
 // external converter service defined by the CONVERTER_URL environment variable.
 
-const URL = require('url');
+const urlLib = require('url');
 
 module.exports = async (req, res) => {
   try {
-    const parsed = URL.parse(req.url, true);
+    const parsed = urlLib.parse(req.url, true);
     const videoId = parsed.query && parsed.query.videoId;
     if (!videoId) {
       res.statusCode = 400;
@@ -25,9 +25,10 @@ module.exports = async (req, res) => {
     // Build target URL and validate
     let target;
     try {
-      target = new URL(`/download?videoId=${encodeURIComponent(videoId)}`, converterBase).toString();
+      // Use the global URL constructor (not the node 'url' module object)
+      target = new globalThis.URL(`/download?videoId=${encodeURIComponent(videoId)}`, converterBase).toString();
     } catch (err) {
-      console.error('Invalid CONVERTER_URL:', converterBase, err);
+      console.error('Invalid CONVERTER_URL or failed to build target URL:', converterBase, err && err.message);
       res.statusCode = 500;
       res.end('Invalid CONVERTER_URL configuration');
       return;

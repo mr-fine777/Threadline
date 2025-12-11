@@ -149,7 +149,9 @@
           }
           const videoId = idMatch[1];
           // Use your production domain (must be HTTPS) so the page can call the API
-          const localUrl = `https://www.snookie.online/download?videoId=${videoId}`;
+          // Use Vercel serverless proxy endpoint so front-end + API remain same-origin.
+          // The proxy will forward the request to your converter service (set CONVERTER_URL in Vercel).
+          const localUrl = `/api/download?videoId=${videoId}`;
 
           // Use 0x0 iframe to initiate the download without opening a new tab.
           try {

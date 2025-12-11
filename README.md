@@ -1,31 +1,35 @@
 snookie.online
 ================
 
-Small static front-end that proxies a YouTube -> MP3 conversion to a local Express converter.
+This repo contains the static front-end and a helper serverless proxy for a YouTube→MP3 workflow.
 
 Structure
-- `index.html`, `styles.css` — front-end UI
-- `converter-server/` — Node/Express server that streams YouTube audio and converts to MP3
-- `ytmp3_files/` — downloaded frontend files (optional)
+- `index.html`, `styles.css` — front-end UI (served statically)
+- `api/download.js` — Vercel serverless proxy that forwards requests to a converter service
+- `converter-server/` — local Node/Express converter (streams ytdl/ffmpeg). NOT deployed to Vercel.
 
-Install & run (server)
-1. Open PowerShell and install dependencies:
+Important: Vercel cannot reliably run long-running ffmpeg/yt-dlp conversions. Host the converter
+on a separate server (VPS, Render, or your XAMPP machine) and set `CONVERTER_URL` in Vercel to
+the converter base URL (for example `https://api.snookie.online` or `https://www.snookie.online` if
+you configure a reverse proxy).
 
-```powershell
-cd C:\xampp\htdocs\converter-server
-npm install
-```
+How it works on Vercel
+1. Deploy the repo to Vercel (see steps below). The front-end will be served from `https://<your-site>`.
+2. The front-end calls `/api/download?videoId=<id>` which is implemented in `api/download.js`.
+3. `api/download.js` forwards that request to `CONVERTER_URL` (configure this in Vercel Environment Variables).
+4. The converter service (hosted elsewhere) performs the heavy work (ffmpeg, yt-dlp) and returns the MP3 stream.
 
-2. Start the converter server:
+Setup & deploy to Vercel
+1. Sign in to Vercel and create a new project by importing this GitHub repository.
+2. In the Vercel Project Settings → Environment Variables add:
+   - `CONVERTER_URL` = `https://your-converter-host.example` (where your converter is hosted)
+3. Deploy. The site will be available at the Vercel domain provided.
 
-```powershell
-npm start
-```
+Running locally (developer)
+- The front-end can be served by any static server; to test the proxy locally, set `CONVERTER_URL` to your
+  local converter (e.g. `http://localhost:3000`) when running serverless functions locally.
 
-Usage
-- Open `index.html` in the browser (served from your local webroot e.g. `http://localhost/`) and paste a YouTube URL.
-- Press Convert (or ENTER). The page will call `http://localhost:3000/download?videoId=<id>` to initiate download.
-
-Notes
-- Do not commit `node_modules` or `yt-dlp.exe` (they are in `.gitignore`).
-- If you want deterministic downloads and better reliability, install `yt-dlp` on the server host (or keep `yt-dlp.exe` in `converter-server/`).
+Notes and recommendations
+- For production, configure a reverse proxy (Apache/Nginx) to proxy `/download` to your converter if
+  you host the converter on the same machine. This avoids CORS and keeps everything same-origin.
+- Do NOT commit large binaries (like `yt-dlp.exe`) or `node_modules` — they are excluded in `.gitignore`.

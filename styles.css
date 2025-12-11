@@ -1,0 +1,30 @@
+/* Load local DynaPuff font instead of Google Fonts */
+@font-face {
+  font-family: 'DynaPuff';
+  src: url('files/DynaPuff.ttf') format('truetype');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+    --background: #a96868;
+    --color: #eda1a1;
+    --trim: #2c2137;
+    --shadow: #764462;
+    --shadow-rgb: 118,68,98;
+    --font: 'DynaPuff', Arial, sans-serif;
+}
+
+body {
+    font-family: var(--font);
+    margin: 0;
+}
+
+input {
+    font-family: var(--font);
+}
+
+button {
+    font-family: var(--font);
+}

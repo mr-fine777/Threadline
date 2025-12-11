@@ -40,6 +40,57 @@ module.exports = async (req, res) => {
     if (req.headers['user-agent']) fetchOpts.headers['user-agent'] = req.headers['user-agent'];
     if (req.headers['accept']) fetchOpts.headers['accept'] = req.headers['accept'];
 
+    const inspect = parsed.query && parsed.query.inspect === '1';
+
+    // Diagnostic mode: return upstream status/headers/body snippet as JSON
+    if (inspect) {
+      try {
+        const controllerDiag = new AbortController();
+        const timeoutDiag = setTimeout(() => controllerDiag.abort(), 30_000);
+        fetchOpts.signal = controllerDiag.signal;
+        const up = await fetch(target, fetchOpts).catch((err) => {
+          clearTimeout(timeoutDiag);
+          console.error('Inspect fetch failed:', err && err.message);
+          throw err;
+        });
+        clearTimeout(timeoutDiag);
+
+        const headers = {};
+        try {
+          for (const [k, v] of up.headers.entries()) headers[k] = v;
+        } catch (e) {
+          if (typeof up.headers.forEach === 'function') up.headers.forEach((v, k) => (headers[k] = v));
+        }
+
+        let bodySnippet = null;
+        try {
+          if (up.body) {
+            const reader = up.body.getReader();
+            const { done, value } = await reader.read();
+            if (!done && value) {
+              const asStr = Buffer.from(value).toString('utf8');
+              bodySnippet = asStr.slice(0, 1024);
+            }
+          } else {
+            bodySnippet = null;
+          }
+        } catch (e) {
+          bodySnippet = `<<could not read body: ${e && e.message}>>`;
+        }
+
+        res.setHeader('content-type', 'application/json');
+        res.statusCode = up.status || 200;
+        res.end(JSON.stringify({ ok: true, upstreamStatus: up.status, headers, bodySnippet }));
+        return;
+      } catch (err) {
+        console.error('Inspect mode error:', err && err.message);
+        res.setHeader('content-type', 'application/json');
+        res.statusCode = err && err.name === 'AbortError' ? 504 : 502;
+        res.end(JSON.stringify({ ok: false, error: String(err && err.message) }));
+        return;
+      }
+    }
+
     // For HEAD requests we just proxy HEAD
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30_000);

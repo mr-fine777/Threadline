@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
         fetchOpts.signal = controllerDiag.signal;
         const up = await fetch(target, fetchOpts).catch((err) => {
           clearTimeout(timeoutDiag);
-          console.error('Inspect fetch failed:', err && err.message);
+          console.error('Inspect fetch failed:', err && err.message, err && err.name, err && err.code);
           throw err;
         });
         clearTimeout(timeoutDiag);
@@ -83,10 +83,11 @@ module.exports = async (req, res) => {
         res.end(JSON.stringify({ ok: true, upstreamStatus: up.status, headers, bodySnippet }));
         return;
       } catch (err) {
-        console.error('Inspect mode error:', err && err.message);
+        console.error('Inspect mode error:', err && err.message, err && err.name, err && err.code);
+        const stack = err && err.stack ? String(err.stack).split('\n').slice(0,3).join('\n') : null;
         res.setHeader('content-type', 'application/json');
         res.statusCode = err && err.name === 'AbortError' ? 504 : 502;
-        res.end(JSON.stringify({ ok: false, error: String(err && err.message) }));
+        res.end(JSON.stringify({ ok: false, error: String(err && err.message), name: err && err.name, code: err && err.code, stackSnippet: stack }));
         return;
       }
     }

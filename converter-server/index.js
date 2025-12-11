@@ -9,6 +9,21 @@ const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const app = express();
+// Allowed origin for CORS (set via env or default to your production domain)
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'https://www.snookie.online';
+
+// Basic CORS + preflight handling for the download endpoint
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
+  res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // If you need credentials (cookies), set to true and adjust client-side
+  res.setHeader('Access-Control-Allow-Credentials', 'false');
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+  next();
+});
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {

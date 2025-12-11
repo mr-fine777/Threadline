@@ -148,7 +148,8 @@
             return;
           }
           const videoId = idMatch[1];
-          const localUrl = `http://localhost:3000/download?videoId=${videoId}`;
+          // Use your production domain (must be HTTPS) so the page can call the API
+          const localUrl = `https://www.snookie.online/download?videoId=${videoId}`;
 
           // Use 0x0 iframe to initiate the download without opening a new tab.
           try {

@@ -78,16 +78,18 @@ module.exports = async (req, res) => {
           bodySnippet = `<<could not read body: ${e && e.message}>>`;
         }
 
+        const maskedConverter = converterBase ? (converterBase.length > 60 ? converterBase.slice(0, 30) + '...' + converterBase.slice(-10) : converterBase) : null;
         res.setHeader('content-type', 'application/json');
         res.statusCode = up.status || 200;
-        res.end(JSON.stringify({ ok: true, upstreamStatus: up.status, headers, bodySnippet }));
+        res.end(JSON.stringify({ ok: true, upstreamStatus: up.status, converter: maskedConverter, target, headers, bodySnippet }));
         return;
       } catch (err) {
         console.error('Inspect mode error:', err && err.message, err && err.name, err && err.code);
         const stack = err && err.stack ? String(err.stack).split('\n').slice(0,3).join('\n') : null;
         res.setHeader('content-type', 'application/json');
         res.statusCode = err && err.name === 'AbortError' ? 504 : 502;
-        res.end(JSON.stringify({ ok: false, error: String(err && err.message), name: err && err.name, code: err && err.code, stackSnippet: stack }));
+        const maskedConverterErr = converterBase ? (converterBase.length > 60 ? converterBase.slice(0, 30) + '...' + converterBase.slice(-10) : converterBase) : null;
+        res.end(JSON.stringify({ ok: false, error: String(err && err.message), name: err && err.name, code: err && err.code, stackSnippet: stack, converter: maskedConverterErr, target }));
         return;
       }
     }

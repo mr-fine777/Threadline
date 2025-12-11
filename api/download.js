@@ -1,90 +1,87 @@
-const https = require('https');
-const http = require('http');
-const url = require('url');
+// api/download.js
+// Simple serverless proxy that forwards /api/download?videoId=... to the
+// external converter service defined by the CONVERTER_URL environment variable.
 
-module.exports = async (req, res) => {
-  const query = req.query || url.parse(req.url, true).query;
-  const videoId = query.videoId;
-
-  if (!videoId) {
-    res.statusCode = 400;
-    res.end('Missing videoId');
-    return;
-  }
-
-  const converterBase = process.env.CONVERTER_URL;
-  if (!converterBase) {
-    res.statusCode = 500;
-    res.end('Converter not configured');
-    return;
-  }
-
-  const target = new URL(`/download?videoId=${encodeURIComponent(videoId)}`, converterBase);
-  const httpLib = target.protocol === 'https:' ? https : http;
-
-  const options = {
-    method: req.method || 'GET',
-    headers: Object.assign({}, req.headers)
-  };
-
-  // Forward request to converter
-  const proxied = httpLib.request(target, options, (converterRes) => {
-    res.statusCode = converterRes.statusCode || 200;
-    Object.entries(converterRes.headers || {}).forEach(([k, v]) => {
-      // Don't leak hop-by-hop headers
-      if ([ 'transfer-encoding', 'content-encoding' ].includes(k.toLowerCase())) return;
-      res.setHeader(k, v);
-    });
-
-    converterRes.pipe(res);
-  });
-
-  proxied.on('error', (err) => {
-    res.statusCode = 502;
-    res.end('Bad Gateway: ' + String(err.message));
-  });
-
-  // If original request has a body, pipe it
-  req.pipe(proxied);
-};
 const URL = require('url');
 
 module.exports = async (req, res) => {
   try {
-    const query = URL.parse(req.url, true).query || {};
-    const videoId = query.videoId;
+    const parsed = URL.parse(req.url, true);
+    const videoId = parsed.query && parsed.query.videoId;
     if (!videoId) {
       res.statusCode = 400;
       res.end('Missing videoId');
       return;
     }
 
-    const converterBase = process.env.CONVERTER_URL || 'http://localhost:3000';
-    const target = `${converterBase.replace(/\/$/, '')}/download?videoId=${encodeURIComponent(videoId)}`;
+    const converterBase = process.env.CONVERTER_URL;
+    if (!converterBase) {
+      console.error('CONVERTER_URL not set');
+      res.statusCode = 502;
+      res.end('Converter not configured. Set CONVERTER_URL in Vercel environment variables.');
+      return;
+    }
 
-    // Forward the request to the external converter service and pipe response back
-    const fetched = await fetch(target, { method: req.method, headers: { 'accept': req.headers.accept || '*/*' } });
+    // Build target URL and validate
+    let target;
+    try {
+      target = new URL(`/download?videoId=${encodeURIComponent(videoId)}`, converterBase).toString();
+    } catch (err) {
+      console.error('Invalid CONVERTER_URL:', converterBase, err);
+      res.statusCode = 500;
+      res.end('Invalid CONVERTER_URL configuration');
+      return;
+    }
+
+    // Use global fetch available in Vercel runtime
+    const fetchOpts = { method: req.method || 'GET', headers: {} };
+    // Forward a minimal set of headers
+    if (req.headers['user-agent']) fetchOpts.headers['user-agent'] = req.headers['user-agent'];
+    if (req.headers['accept']) fetchOpts.headers['accept'] = req.headers['accept'];
+
+    // For HEAD requests we just proxy HEAD
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30_000);
+    fetchOpts.signal = controller.signal;
+
+    const upstream = await fetch(target, fetchOpts).catch((err) => {
+      clearTimeout(timeout);
+      console.error('Fetch to converter failed:', err && err.message);
+      throw err;
+    });
+    clearTimeout(timeout);
 
     // Forward status and headers
-    res.statusCode = fetched.status;
-    fetched.headers.forEach((value, name) => {
-      // Avoid exposing internal server headers
-      if (name.toLowerCase() === 'transfer-encoding') return;
+    res.statusCode = upstream.status || 502;
+    upstream.headers.forEach((value, name) => {
+      const lower = name.toLowerCase();
+      if (['transfer-encoding', 'content-encoding', 'content-length'].includes(lower)) return;
       res.setHeader(name, value);
     });
 
-    // Stream the body
-    const reader = fetched.body.getReader();
-    const encoder = new TextEncoder();
+    // If upstream returned no body (e.g., HEAD), end here
+    if (!upstream.body) {
+      res.end();
+      return;
+    }
+
+    // Stream body to response
+    const reader = upstream.body.getReader();
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
+      // value is a Uint8Array
       res.write(Buffer.from(value));
     }
     res.end();
   } catch (err) {
-    console.error('Proxy error', err);
-    res.statusCode = 502;
-    res.end('Proxy error');
+    console.error('Proxy error:', err && err.message);
+    if (err && err.name === 'AbortError') {
+      res.statusCode = 504;
+      res.end('Gateway timeout contacting converter');
+    } else {
+      res.statusCode = 502;
+      res.end('Bad Gateway: ' + String(err && err.message));
+    }
   }
 };

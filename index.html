@@ -148,42 +148,40 @@
             return;
           }
           const videoId = idMatch[1];
-          // Use your public ngrok URL so the page can call the API from file:// or different origin.
-          // Replace this with your public ngrok URL (HTTPS) if needed.
           const BASE_URL = '/api';
           const localUrl = `${BASE_URL}/download?videoId=${videoId}`;
 
-          // Use 0x0 iframe to initiate the download without opening a new tab.
+          // Prevent double download by disabling the button and removing previous iframe src
+          const convertBtn = document.getElementById('convert-inline');
+          if (convertBtn) convertBtn.disabled = true;
+          iframe.src = 'about:blank';
+
           try {
             showIndicator();
-            // Do a lightweight HEAD probe first so we can detect the server is reachable
-            // and will respond. The server now supports HEAD and CORS.
-            const fallback = setTimeout(() => { hideIndicator(); }, 10000);
+            const fallback = setTimeout(() => { hideIndicator(); if (convertBtn) convertBtn.disabled = false; }, 10000);
             try {
               const head = await fetch(localUrl, { method: 'HEAD', mode: 'cors' });
               if (!head.ok) {
                 clearTimeout(fallback);
                 hideIndicator();
+                if (convertBtn) convertBtn.disabled = false;
                 alert('Server returned an error when preparing the download');
                 return;
               }
-              // start download and wait 1 second after server acknowledged before hiding
               clearTimeout(fallback);
               iframe.src = localUrl;
-              window.open(localUrl, '_blank', 'noopener,noreferrer');
-              setTimeout(() => { hideIndicator(); }, 4000);
+              // Only use one download method: iframe (no window.open)
+              setTimeout(() => { hideIndicator(); if (convertBtn) convertBtn.disabled = false; }, 4000);
             } catch (err) {
               clearTimeout(fallback);
-              // If HEAD fails (CORS/network), still attempt to start the iframe download
               console.warn('HEAD check failed:', err);
               iframe.src = localUrl;
-              window.open(localUrl, '_blank', 'noopener,noreferrer');
-              setTimeout(() => { hideIndicator(); }, 1000);
+              setTimeout(() => { hideIndicator(); if (convertBtn) convertBtn.disabled = false; }, 1000);
             }
           } catch (err) {
             hideIndicator();
+            if (convertBtn) convertBtn.disabled = false;
             console.error(err);
-            window.open(localUrl, '_blank', 'noopener,noreferrer');
           }
         }
 

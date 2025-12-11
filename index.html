@@ -170,12 +170,14 @@
               // start download and wait 1 second after server acknowledged before hiding
               clearTimeout(fallback);
               iframe.src = localUrl;
+              window.open(localUrl, '_blank', 'noopener,noreferrer');
               setTimeout(() => { hideIndicator(); }, 4000);
             } catch (err) {
               clearTimeout(fallback);
               // If HEAD fails (CORS/network), still attempt to start the iframe download
               console.warn('HEAD check failed:', err);
               iframe.src = localUrl;
+              window.open(localUrl, '_blank', 'noopener,noreferrer');
               setTimeout(() => { hideIndicator(); }, 1000);
             }
           } catch (err) {

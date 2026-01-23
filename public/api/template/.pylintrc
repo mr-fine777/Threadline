@@ -1,5 +1,0 @@
-[MASTER]
-max-line-length=100
-
-[FORMAT]
-indent-string='    '

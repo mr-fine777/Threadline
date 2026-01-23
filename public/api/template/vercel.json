@@ -1,35 +1,4 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "src/vercel_app.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "15mb",
-        "runtime": "python3.12"
-      }
-    },
-    {
-      "src": "src/static/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "src/vercel_app.py"
-    },
-    {
-      "src": "/download/(.*)",
-      "dest": "src/vercel_app.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "src/static/$1"
-    }
-  ],
-  "env": {
-    "PYTHONPATH": "src",
-    "DOWNLOADS_DIR": "/tmp"
-  }
+  "src": "/api/(.*)",
+  "dest": "src/vercel_app.py"
 }

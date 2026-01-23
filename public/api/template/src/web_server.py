@@ -6,14 +6,7 @@ import logging
 import asyncio
 from flask import Flask, request, send_file, jsonify
 
-# Load environment variables from .env if present
-try:
-    from dotenv import load_dotenv
-    # .env is one level up from src
-    dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
-    load_dotenv(dotenv_path)
-except ImportError:
-    pass  # If python-dotenv is not installed, skip loading .env
+
 
 from roblox_asset_downloader import RobloxAssetDownloader
 

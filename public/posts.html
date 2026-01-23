@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html><head>
+
+	
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TYNRY2CSXL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TYNRY2CSXL');
+</script>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threadline</title>
+    <link rel="icon" href="/public/img/iconic.png" type="image/png">
+    <link rel="stylesheet" href="/public/styles.css">
+</head>
+<body>
+<div class="container">
+  <div class="logo">
+    <a href="/public/index.html">
+      <img src="/public/img/img.png" style="max-height: 75px; user-select: none;">
+    </a>
+  </div>
+        <div class="header-dropdown">
+            <button id="menuToggle" class="btn dropdown-toggle" aria-expanded="false" aria-controls="subheaderMenu">☰</button>
+        </div>
+</div>
+<!-- Subheader menu: full-width block under the header with a 4x2 table (4 columns × 2 rows) -->
+<div id="subheaderMenu" class="subheader-menu" role="navigation" aria-label="Subheader menu" aria-hidden="true">
+    <table class="menu-table" role="presentation">
+        <tbody>
+            <tr>
+                <td>
+                    <div class="menu-title">Download</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="https://addons.mozilla.org/en-US/firefox/addon/threadline/">Firefox</a>
+                        <a class="menu-link" href="https://chromewebstore.google.com/detail/threadline/jaepjofibedopopohhifnaohihambnco">Chrome</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="menu-title">Tools</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="/public/index.html">Download Classic Clothing</a>
+                        <a class="menu-link" href="/public/avatar-corrector.html">Avatar Corrector</a>
+                        <a class="menu-link" href="/public/premium.html">Get Premium</a>
+                        <a class="menu-link" href="/public/temp/bash/fast/sponsored.html">Sponsored Listings</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="menu-title">About</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="/public/index.html#about">About Threadline</a>
+                        <a class="menu-link" href="/public/blog.html">Blog</a>
+                        <a class="menu-link" href="/public/changelog.html">Changelog</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="menu-title">Legal</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="/public/tos.html#privacy">Privacy</a>
+                        <a class="menu-link" href="/public/tos.html#terms">Terms</a>
+                        <a class="menu-link" href="/public/contact.html">Contact</a>
+                    </div>
+                </td>
+            </tr>
+
+      <tr>
+        <td>
+          <!-- Reserved: add more Download-related items here -->
+        </td>
+        <td>
+          <!-- Reserved: add more Tools-related items here -->
+        </td>
+        <td>
+          <!-- Reserved: add more About-related items here -->
+        </td>
+        <td>
+          <!-- Reserved: add more Legal-related items here -->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+(function(){
+    const toggle = document.getElementById('menuToggle');
+    const menu = document.getElementById('subheaderMenu');
+    if (!toggle || !menu) return;
+    function setOpen(open) {
+        const show = !!open;
+        menu.classList.toggle('open', show);
+        toggle.setAttribute('aria-expanded', show);
+        menu.setAttribute('aria-hidden', !show);
+    }
+    // sync initial state (menu is hidden by default unless `.open` is present)
+    setOpen(menu.classList.contains('open'));
+    toggle.addEventListener('click', function(e){
+        e.stopPropagation();
+        setOpen(!menu.classList.contains('open'));
+    });
+    document.addEventListener('click', function(e){
+        if (!menu.contains(e.target) && e.target !== toggle) setOpen(false);
+    });
+    document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape') setOpen(false);
+    });
+})();
+</script>
+
+<div class="space-between"></div>
+<div class="performer" id="post-container"></div>
+<div class="bottom-flex">
+</div>
+
+<div class="footer-main">
+  <div class="footer-holster">
+    <div class="footer-left">
+      <a href="/public/index.html">
+        <img src="/public/img/img.png" style="max-height: 60px; user-select: none;">
+      </a>
+        <p id="rights">© 2026 Threadline. All rights reserved.</p>
+    </div>
+    <div class="footer-right">
+      <a class="footer-link" href="/public/index.html#about">About</a>
+      <a class="footer-link" href="/public/blog.html">Blog</a>
+      <a class="footer-link" href="/public/changelog.html">Changelog</a>
+      <a class="footer-link" href="/public/tos.html#privacy">Privacy</a>
+      <a class="footer-link" href="/public/tos.html#terms">Terms</a>
+      <a class="footer-link" href="/public/contact.html">Contact</a>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  // Dropdown menu logic
+  const toggle = document.getElementById('menuToggle');
+  const menu = document.getElementById('subheaderMenu');
+  if (!toggle || !menu) return;
+  function setOpen(open) {
+    const show = !!open;
+    menu.classList.toggle('open', show);
+    toggle.setAttribute('aria-expanded', show);
+    menu.setAttribute('aria-hidden', !show);
+  }
+  setOpen(menu.classList.contains('open'));
+  toggle.addEventListener('click', function(e){
+    e.stopPropagation();
+    setOpen(!menu.classList.contains('open'));
+  });
+  document.addEventListener('click', function(e){
+    if (!menu.contains(e.target) && e.target !== toggle) setOpen(false);
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') setOpen(false);
+  });
+})();
+
+// Blog post logic
+document.addEventListener('DOMContentLoaded', function() {
+  // Helper: get slug from URL (?slug=...)
+  function getSlug() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('slug');
+  }
+
+  // Fetch blogpost.json and display post if valid
+  const slug = getSlug();
+  if (!slug) {
+    window.location.href = 'index.html';
+    return;
+  }
+  fetch('posts/blogpost.json')
+    .then(r => r.json())
+    .then(data => {
+      const posts = data.BlogPosts || [];
+      const post = posts.find(p => p.slug === slug);
+      if (!post) {
+        window.location.href = 'index.html';
+        return;
+      }
+      // Render post with newlines preserved as <br>
+      const container = document.getElementById('post-container');
+      // Replace newlines with <br> for HTML rendering
+      const formattedBody = post.body.replace(/\n/g, '<br><br>');
+      container.innerHTML = `
+        <div class="specific-post">
+          <div class="post-content">
+            <br>
+            <h1 id="title">${post.title}</h1>
+            <img id="image" src="${post.image}" alt="Post image">
+            <br>
+            <p id="body">${formattedBody}</p>
+            <br>
+          </div>
+        </div>
+      `;
+      container.style.position = 'relative';
+    })
+    .catch(() => {
+      window.location.href = 'index.html';
+    });
+});
+</script>

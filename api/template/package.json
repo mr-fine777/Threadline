@@ -1,0 +1,13 @@
+{
+  "name": "roblox-downloader-local-server",
+  "version": "1.0.0",
+  "description": "Local static server and lightweight fake/proxy API for testing the Roblox downloader UI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7"
+  }
+}

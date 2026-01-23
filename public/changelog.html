@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html><head>
+
+	
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TYNRY2CSXL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TYNRY2CSXL');
+</script>
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threadline</title>
+    <link rel="icon" href="/public/img/iconic.png" type="image/png">
+    <link rel="stylesheet" href="/public/styles.css">
+</head>
+<body>
+<div class="container">
+  <div class="logo">
+    <a href="/public/index.html">
+      <img src="/public/img/img.png" style="max-height: 75px; user-select: none;">
+    </a>
+  </div>
+        <div class="header-dropdown">
+            <button id="menuToggle" class="btn dropdown-toggle" aria-expanded="false" aria-controls="subheaderMenu">☰</button>
+        </div>
+</div>
+<!-- Subheader menu: full-width block under the header with a 4x2 table (4 columns × 2 rows) -->
+<div id="subheaderMenu" class="subheader-menu" role="navigation" aria-label="Subheader menu" aria-hidden="true">
+    <table class="menu-table" role="presentation">
+        <tbody>
+            <tr>
+                <td>
+                    <div class="menu-title">Download</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="https://addons.mozilla.org/en-US/firefox/addon/threadline/">Firefox</a>
+                        <a class="menu-link" href="https://chromewebstore.google.com/detail/threadline/jaepjofibedopopohhifnaohihambnco">Chrome</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="menu-title">Tools</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="/public/index.html">Download Classic Clothing</a>
+                        <a class="menu-link" href="/public/avatar-corrector.html">Avatar Corrector</a>
+                        <a class="menu-link" href="/public/premium.html">Get Premium</a>
+                        <a class="menu-link" href="/public/temp/bash/fast/sponsored.html">Sponsored Listings</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="menu-title">About</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="/public/index.html#about">About Threadline</a>
+                        <a class="menu-link" href="/public/blog.html">Blog</a>
+                        <a class="menu-link" href="/public/changelog.html">Changelog</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="menu-title">Legal</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="/public/tos.html#privacy">Privacy</a>
+                        <a class="menu-link" href="/public/tos.html#terms">Terms</a>
+                        <a class="menu-link" href="/public/contact.html">Contact</a>
+                    </div>
+                </td>
+            </tr>
+
+      <tr>
+        <td>
+          <!-- Reserved: add more Download-related items here -->
+        </td>
+        <td>
+          <!-- Reserved: add more Tools-related items here -->
+        </td>
+        <td>
+          <!-- Reserved: add more About-related items here -->
+        </td>
+        <td>
+          <!-- Reserved: add more Legal-related items here -->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<script>
+(function(){
+    const toggle = document.getElementById('menuToggle');
+    const menu = document.getElementById('subheaderMenu');
+    if (!toggle || !menu) return;
+    function setOpen(open) {
+        const show = !!open;
+        menu.classList.toggle('open', show);
+        toggle.setAttribute('aria-expanded', show);
+        menu.setAttribute('aria-hidden', !show);
+    }
+    // sync initial state (menu is hidden by default unless `.open` is present)
+    setOpen(menu.classList.contains('open'));
+    toggle.addEventListener('click', function(e){
+        e.stopPropagation();
+        setOpen(!menu.classList.contains('open'));
+    });
+    document.addEventListener('click', function(e){
+        if (!menu.contains(e.target) && e.target !== toggle) setOpen(false);
+    });
+    document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape') setOpen(false);
+    });
+})();
+</script>
+
+<div class="space-between">
+</div>
+
+<div class="changelog">
+<h3>Threadline 1.9.0 (Current)</h3>
+<p>• Updated API speeds
+<br>
+• Aesthetical Changes
+<br>
+• Bug fixes
+</p>
+</div>
+<div class="changelog">
+<h3>Threadline 1.8.0</h3>
+<p>• Updated API access
+<br>
+• Created isolated API
+<br>
+• Updated Server access
+<br>
+• Updated Ads to be less intrusive
+<br>
+• Bug fixes
+</p>
+</div>
+<div class="changelog">
+<h3>Threadline 1.7.0</h3>
+<p>• Group Download Feature
+<br>
+• Format fixes
+<br>
+• Minor Bug fixes
+</p>
+</div>
+<div class="changelog">
+<h3>Threadline 1.6.0</h3>
+<p>• CSS Overhaul
+<br>
+• Updated Buttons
+<br>
+• Custom Template Remake
+<br>
+• Download Guarantee fixes
+<br>
+• Format fixes
+<br>
+• Bug fixes
+</p>
+</div>
+<div class="changelog">
+<h3>Threadline 1.5.0</h3>
+<p>• Implemented new Premium features, allowing an ad free experience, no watermarks, custom templates, and much more.
+<br>
+• Updated CSS
+<br>
+• Updated JS
+<br>
+• Fixed watermarking for TShirts
+<br>
+• Bug fixes
+</p>
+</div>
+<div class="changelog">
+<h3>Threadline 1.3.0 </h3>
+<p>
+• Added logo
+<br>
+• Removed User-Select in CSS
+<br>
+• Bug fixes
+<p>
+</div>
+<div class="changelog">
+<h3>Threadline 1.2.0 </h3>
+<p>• Added watermark on downloaded images
+<br>
+• Updated download format
+<br>
+• Bug fixes
+</p>
+</div>
+<div class="changelog">
+<h3>Threadline 1.1.0 </h3>
+<p>• Removed Ad replacement, instead displaying an Ad inside of the extension itself
+<br>
+• Bug fixes
+<br>
+• API updates<p>
+</div>
+<div class="changelog">
+<h3>Threadline 1.0.0 </h3>
+<p>Launch<p>
+</div>
+<div class="bottom-flex">
+</div>
+
+<div class="footer-main">
+  <div class="footer-holster">
+    <div class="footer-left">
+      <a href="/public/index.html">
+        <img src="/public/img/img.png" style="max-height: 60px; user-select: none;">
+      </a>
+        <p id="rights">© 2026 Threadline. All rights reserved.</p>
+    </div>
+    <div class="footer-right">
+      <a class="footer-link" href="/public/index.html#about">About</a>
+      <a class="footer-link" href="/public/blog.html">Blog</a>
+      <a class="footer-link" href="/public/changelog.html">Changelog</a>
+      <a class="footer-link" href="/public/tos.html#privacy">Privacy</a>
+      <a class="footer-link" href="/public/tos.html#terms">Terms</a>
+      <a class="footer-link" href="/public/contact.html">Contact</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

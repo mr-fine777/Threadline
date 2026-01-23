@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link href='https://fonts.googleapis.com/css?family=Sofia' rel='stylesheet'>
+  <style>
+    * {
+      user-select: none;
+    }
+    
+    body {
+      width: 300px;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background-color: #53216e;
+      color: white;
+      margin: 0;
+    }
+
+    img {
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+
+    .ad {
+      margin-top: 10px;
+      width: 300px;
+      height: 250px;
+      background-color: #fff;
+    }
+    .container {
+      text-align: center;
+    }
+    
+    .logo {
+      font-size: 44px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .status {
+      margin: 15px 0;
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .item-id {
+      font-family: monospace;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 5px 10px;
+      border-radius: 8px;
+      margin: 5px 0;
+    }
+    
+    .download-btn {
+      background: #fff;
+      color: #bb9b57;
+      border: 2px solid #bb9b57;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background 0.3s;
+      width: 100%;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 45px; /* Add fixed height */
+    }
+    
+    .download-btn:hover {
+      background: #bb9b57;
+      color: white;
+    }
+    
+    .download-btn:disabled {
+      background: #bb9b57;
+      color: white;
+      cursor: not-allowed;
+    }
+    
+    .loading {
+      display: none;
+      position: absolute; /* Make loading overlay absolute */
+    }
+    
+    .loading.show {
+      display: inline-block;
+    }
+    
+    .spinner {
+      border: 2px solid #bb9b57;
+      border-top: 2px solid #fff;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .error {
+      background: rgba(187, 167, 87, 0.2);
+      color: #f4ce6e;
+    }
+    
+    .success {
+      background: rgba(187, 167, 87, 0.2);
+      color: #f4ce6e;
+    }
+    
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: transform 0.15s;
+      z-index: 100;
+    }
+    .copy-btn:hover {
+      transform: scale(1.12);
+    }
+    .copy-btn:active {
+      transform: scale(1.08);
+    }
+    
+    .upload-div {
+      margin-top: 10px;
+      width: 300px;
+      height: 250px;
+      background: #fff;
+      border-radius: 8px;
+      border: 2px #bb9b57 solid;
+      position: relative;
+      overflow: hidden;
+      pointer-events: auto !important;
+    }
+    .upload-div img {
+      max-width: 585px;
+      max-height: 559px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 80%;
+    }
+    .upload-div button {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      padding: 12px 32px;
+      font-size: 18px;
+      background: #fff;
+      color: #bb9b57;
+      border: 2px #bb9b57 solid;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+      pointer-events: auto !important;
+    }
+    .upload-div button:hover {
+      background: #bb9b57;
+      color: #fff;
+    }
+    .upload-div input {
+      pointer-events: auto !important;
+    }
+    
+    .upload-div * {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    .premium-btn {
+      border: 2px solid #bb9b57;
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px 0;
+      background: #fff;
+      color: #bb9b57;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .premium-btn:hover {
+      background: #bb9b57;
+      color: #fff;
+    }
+
+  </style>
+</head>
+<body>
+  <button id="copyBtn" class="copy-btn" title="Copy to clipboard">
+    <img src="button.png" alt="Copy" style="width:32px;height:32px;">
+  </button>
+  <div class="container">
+    <div class="logo">
+      <img src="img.png" style="max-height: 75px; user-select: none;">
+    </div>
+    
+    <div id="status" class="status">
+      <div id="statusText">Checking current page...</div>
+      <div id="itemId" class="item-id" style="display: none;"></div>
+    </div>
+    
+    <button id="downloadBtn" class="download-btn" disabled>
+      <span class="loading" id="loading">
+        <span class="spinner"></span>
+        Downloading...
+      </span>
+      <span id="downloadText">Download Template</span>
+    </button>
+  </div>
+
+<div class="ad">
+<iframe
+  src="https://www.padrinos.blog/ad.html"
+  width="300"
+  height="250"
+  style="border:none;"
+  sandbox="allow-scripts allow-same-origin"
+  referrerpolicy="no-referrer">
+</iframe>
+</div>
+
+  <a href="https://www.padrinos.blog/threadline/premium.html" 
+     target="_blank" 
+     class="premium-btn">
+     Get Premium
+  </a>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

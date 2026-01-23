@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html><head>
+
+	
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TYNRY2CSXL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TYNRY2CSXL');
+</script>
+
+<style>
+
+.space-between {
+    margin-top: 200px !important;
+}
+
+.registry-space {
+	text-align: center;
+	justify-content: center;
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+#access_code {
+    width: 80%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid #f4ce6e;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #53216e;
+    text-align: center;
+    font-size: 16px;
+}
+
+#login-button-ros {
+    background-color: #53216e;
+    border: 2px solid #f4ce6e;
+    color: #f4ce6e;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 8px 0;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+</style>
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threadline</title>
+    <link rel="icon" href="/public/img/iconic.png" type="image/png">
+    <link rel="stylesheet" href="/public/styles.css">
+</head>
+
+<body>
+<div class="container">
+  <div class="logo">
+    <a href="/public/index.html">
+      <img src="/public/img/img.png" style="max-height: 75px; user-select: none;">
+    </a>
+  </div>
+        <div class="header-dropdown">
+            <button id="menuToggle" class="btn dropdown-toggle" aria-expanded="false" aria-controls="subheaderMenu">☰</button>
+        </div>
+</div>
+<!-- Subheader menu: full-width block under the header with a 4x2 table (4 columns × 2 rows) -->
+<div id="subheaderMenu" class="subheader-menu" role="navigation" aria-label="Subheader menu" aria-hidden="true">
+    <table class="menu-table" role="presentation">
+        <tbody>
+            <tr>
+                <td>
+                    <div class="menu-title">Download</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="https://addons.mozilla.org/en-US/firefox/addon/threadline/">Firefox</a>
+                        <a class="menu-link" href="https://chromewebstore.google.com/detail/threadline/jaepjofibedopopohhifnaohihambnco">Chrome</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="menu-title">Tools</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="/public/index.html">Download Classic Clothing</a>
+                        <a class="menu-link" href="/public/avatar-corrector.html">Avatar Corrector</a>
+                        <a class="menu-link" href="/public/premium.html">Get Premium</a>
+                        <a class="menu-link" href="/public/temp/bash/fast/sponsored.html">Sponsored Listings</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="menu-title">About</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="/public/index.html#about">About Threadline</a>
+                        <a class="menu-link" href="/public/blog.html">Blog</a>
+                        <a class="menu-link" href="/public/changelog.html">Changelog</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="menu-title">Legal</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="/public/tos.html#privacy">Privacy</a>
+                        <a class="menu-link" href="/public/tos.html#terms">Terms</a>
+                    </div>
+                </td>
+            </tr>
+
+      <tr>
+        <td>
+          <!-- Reserved: add more Download-related items here -->
+        </td>
+        <td>
+          <!-- Reserved: add more Tools-related items here -->
+        </td>
+        <td>
+          <!-- Reserved: add more About-related items here -->
+        </td>
+        <td>
+          <!-- Reserved: add more Legal-related items here -->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<script>
+(function(){
+    const toggle = document.getElementById('menuToggle');
+    const menu = document.getElementById('subheaderMenu');
+    if (!toggle || !menu) return;
+    function setOpen(open) {
+        const show = !!open;
+        menu.classList.toggle('open', show);
+        toggle.setAttribute('aria-expanded', show);
+        menu.setAttribute('aria-hidden', !show);
+    }
+    // sync initial state (menu is hidden by default unless `.open` is present)
+    setOpen(menu.classList.contains('open'));
+    toggle.addEventListener('click', function(e){
+        e.stopPropagation();
+        setOpen(!menu.classList.contains('open'));
+    });
+    document.addEventListener('click', function(e){
+        if (!menu.contains(e.target) && e.target !== toggle) setOpen(false);
+    });
+    document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape') setOpen(false);
+    });
+})();
+</script>
+<div class="space-between">
+</div>
+
+<div id="terms-privacy" style="margin: 0 auto; width:80%; display: flex; align-items: center; justify-content: center; flex-direction: column; height: 200px;" class="article-card">
+    <h1 id="about">Sponsored Listings</h1>
+    <article class="login-session-registry">
+    <div class="registry-space">
+        <p>
+            Coming soon! Seamlessly integrate your sponsored listings into Threadline and reach a wider audience. Stay tuned for updates!
+        </p>
+    </div>
+    </article>
+</div>
+
+<!-- after update
+<div id="terms-privacy" style="margin: 0 auto; width:80%; display: flex; align-items: center; justify-content: center; flex-direction: column; height: 0px;" class="article-card">
+    <h1 id="about">Login to Threadline Premium</h1>
+    <article class="login-session-registry">
+    <div class="registry-space">
+        <p>
+            Enter you Threadline Access Code here to log in to your Premium account:
+        </p>
+        <form method="post" action="#">
+            <label for="access_code">Access Code:</label><br>
+            <input type="text" id="access_code" placeholder="Paste your access code here" name="access_code" required><br><br>
+            <input type="submit" id="login-button-ros" value="Log In">
+      </form>
+    </div>
+    </article>
+</div>
+-->
+
+<!--
+<div class="bottom-ad">
+  Ad Content
+</div>
+-->
+<div class="bottom-flex">
+</div>
+
+</body>
+</html>

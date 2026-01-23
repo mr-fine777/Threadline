@@ -1,0 +1,14 @@
+{
+  "name": "threadline-server",
+  "version": "1.0.0",
+  "description": "API server for Threadline Premium verification",
+  "main": "api/check-premium.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "stripe": "^12.18.0"
+  }
+}

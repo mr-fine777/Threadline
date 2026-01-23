@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "Threadline",
+  "version": "1.2.0",
+  "description": "Threadline: Roblox template downloader extension.",
+  "author": "Conway",
+
+  "permissions": [
+    "downloads",
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://roblox.com/*",
+    "https://*.roblox.com/*",
+    "https://rbxthread.vercel.app/*"
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Threadline"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://roblox.com/*",
+        "https://*.roblox.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "icons": {
+    "48": "icon.png",
+    "96": "icon.png"
+  },
+
+  "web_accessible_resources": [{
+    "resources": ["white.png", "watermark.png"],
+    "matches": ["<all_urls>"]
+  }]
+}

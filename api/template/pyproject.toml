@@ -1,0 +1,21 @@
+[project]
+name = "roblox-asset-downloader"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+	"Flask>=2.2",
+	"aiohttp>=3.8",
+	"python-dotenv>=0.19",
+	"requests>=2.26",
+	"Werkzeug>=2.2",
+	"certifi>=2021.10",
+	"Pillow>=9.0",
+	"beautifulsoup4>=4.11"
+]
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+line_length = 100

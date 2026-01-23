@@ -1,0 +1,60 @@
+
+/* Global settings and variables */
+:root {
+	--header-offset: 115px; /* change this if your header height changes */
+}
+
+/* Use border-box everywhere for consistent sizing */
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+
+html {
+	height: 100%;
+}
+
+html, body {
+	overscroll-behavior: none;
+	margin: 0;
+	padding: 0;
+	background-color: #f3f3f3;
+	min-height: 100vh;
+	width: 100%;
+	user-select: none;
+	overflow-x: hidden;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	font-family: Arial, sans-serif;
+	color: #8a5bbc;
+	min-height: 100vh;
+}
+
+
+.container {
+	position: fixed;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px;
+	background-color: #53216e;
+	border-bottom: 2px solid #f4ce6e;
+	box-sizing: border-box;
+	top: 0;
+	z-index: 1100; /* keep header above subheader */
+	width: 100%; /* ensure full-width stickiness */
+	align-self: flex-start; /* helps sticky behavior when parent is flex */
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Optional shadow for depth */
+}
+
+.space-between {
+    margin-top: 150px;
+}
+
+.logo {
+	/* Add styles for the logo */
+	font-size: 24px; /* Example size */
+	color: white; /* Example color */

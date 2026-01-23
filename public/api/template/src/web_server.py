@@ -151,10 +151,12 @@ def check_cookie():
         return jsonify({"error": "Internal server error"}), 500
 
 
-if __name__ == "__main__":
-    # For local development
-    app.run(host="127.0.0.1", port=5000, debug=False)
-# When imported by a WSGI server (like Vercel's Python runtime) the
-# `app` Flask instance defined above will be used directly. No further
-# runtime-specific wiring is necessary here.
+
+# Vercel Python serverless function entrypoint
+def handler(environ, start_response):
+    """
+    WSGI entrypoint for Vercel serverless deployment.
+    Vercel will call this handler for /api/download and /api/check_cookie.
+    """
+    return app(environ, start_response)
 

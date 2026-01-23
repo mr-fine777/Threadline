@@ -58,3 +58,84 @@
 		canvas.addEventListener('mousemove', e => {
 			mouse.x = e.clientX;
 			mouse.y = e.clientY;
+		});
+
+		// Draw larger background circles that ripple
+		function drawBackgroundCircles(time) {
+			// Seeded pseudo-random generator for consistent randomness
+			function mulberry32(a) {
+				return function() {
+					var t = a += 0x6D2B79F5;
+					t = Math.imul(t ^ t >>> 15, t | 1);
+					t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+					return ((t ^ t >>> 14) >>> 0) / 4294967296;
+				}
+			}
+			// Use a fixed seed for everyone
+			const rand = mulberry32(123456);
+			// Generate sporadic background circles
+			const NUM_BG_CIRCLES = 13;
+			const circles = [];
+			for (let i = 0; i < NUM_BG_CIRCLES; i++) {
+				// Random position, but not too close to the edge
+				const cx = rand() * (width * 0.85) + width * 0.075;
+				const cy = rand() * (height * 0.85) + height * 0.075;
+				// Random radius and alpha
+				const r = 90 + rand() * 220;
+				const alpha = 0.04 + rand() * 0.09;
+				circles.push({cx, cy, r, alpha});
+			}
+			for (const c of circles) {
+				// Ripple effect for each circle
+				const dx = c.cx - mouse.x;
+				const dy = c.cy - mouse.y;
+				const dist = Math.sqrt(dx*dx + dy*dy);
+				const basePhase = (dist/WAVE_LENGTH) - (time*WAVE_SPEED);
+				const wave = (
+					Math.sin(basePhase) * 0.7 +
+					Math.cos(basePhase * 0.7) * 0.3
+				) * Math.exp(-dist/900);
+				const offset = wave * (WAVE_AMPLITUDE * 1.2);
+				ctx.beginPath();
+				ctx.arc(c.cx, c.cy + offset, c.r, 0, Math.PI * 2);
+				ctx.fillStyle = `rgba(137,73,171,${c.alpha.toFixed(3)})`;
+				ctx.fill();
+			}
+		}
+
+		function drawDots(time) {
+			ctx.clearRect(0, 0, width, height);
+			ctx.fillStyle = BG_COLOR;
+			ctx.fillRect(0, 0, width, height);
+			// Draw background circles first
+			drawBackgroundCircles(time);
+			ctx.fillStyle = DOT_COLOR;
+			for (let i = 0; i < DOTS_X; i++) {
+				for (let j = 0; j < DOTS_Y; j++) {
+					const x = i * DOT_SPACING + DOT_SPACING/2;
+					const y = j * DOT_SPACING + DOT_SPACING/2;
+					// Calculate distance from mouse
+					const dx = x - mouse.x;
+					const dy = y - mouse.y;
+					const dist = Math.sqrt(dx*dx + dy*dy);
+					// Smoother, more wavey effect: combine sine and cosine, and reduce decay
+					const wave = (
+					  Math.sin((dist/WAVE_LENGTH) - (time*WAVE_SPEED)) * 0.7 +
+					  Math.cos((dist/(WAVE_LENGTH*0.7)) - (time*WAVE_SPEED*0.7)) * 0.3
+					) * Math.exp(-dist/500);
+					const offset = wave * WAVE_AMPLITUDE;
+					ctx.beginPath();
+					ctx.arc(x, y + offset, DOT_RADIUS, 0, Math.PI * 2);
+					ctx.fill();
+				}
+			}
+		}
+
+		function animate(time) {
+			drawDots(time/1000);
+			requestAnimationFrame(animate);
+		}
+		animate(0);
+	</script>
+</body>
+</html>

@@ -1,3 +1,39 @@
+// Vercel-compatible Node.js API endpoint for asset download
+const { RobloxAssetDownloader } = require('../../src/roblox_asset_downloader');
+
+module.exports = async (req, res) => {
+  if (req.method !== 'POST') {
+  res.status(405).json({ error: 'Method not allowed' });
+  return;
+  }
+  const clothing = req.body?.clothing || req.query?.clothing;
+  if (!clothing) {
+  res.status(400).json({ error: "Please provide clothing id or url in field 'clothing'" });
+  return;
+  }
+  try {
+  const downloader = new RobloxAssetDownloader();
+  await downloader.processAsset(clothing);
+  const assetId = String(clothing).replace(/[^0-9]/g, '');
+  if (!assetId) {
+  res.status(400).json({ error: 'Could not determine numeric asset id from input' });
+  return;
+  }
+  const path = require('path');
+  const fs = require('fs');
+  const downloadsDir = process.env.DOWNLOADS_DIR || path.join(__dirname, '../../downloads');
+  const filePath = path.join(downloadsDir, `${assetId}.png`);
+  if (!fs.existsSync(filePath)) {
+  res.status(500).json({ error: 'Download finished but output file not found' });
+  return;
+  }
+  res.setHeader('Content-Type', 'image/png');
+  res.setHeader('Content-Disposition', `attachment; filename=${assetId}.png`);
+  fs.createReadStream(filePath).pipe(res);
+  } catch (e) {
+  res.status(500).json({ error: 'Internal server error' });
+  }
+};
 const fetch = require('node-fetch');
 
 // Simple helper: a tiny placeholder PNG (1x1 transparent) in base64

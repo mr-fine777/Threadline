@@ -1,4 +1,1 @@
-{
-  "src": "/api/(.*)",
-  "dest": "src/vercel_app.py"
-}
+

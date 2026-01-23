@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 // Simple helper: a tiny placeholder PNG (1x1 transparent) in base64
 const PLACEHOLDER_PNG_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=';
 

@@ -1,7 +1,43 @@
 <!DOCTYPE html>
 <html><head>
+	<script>
+  (function(s){s.dataset.zone='10224258',s.src='https://nap5k.com/tag.min.js'})
+    ([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
+</script>
+<script>
+function markIframe(iframe) {
+  if (!iframe || iframe.id === "windowed") return;
 
+  iframe.classList.add("beholder");
+}
+
+// Existing iframes
+document.querySelectorAll("iframe").forEach(markIframe);
+
+// Future iframes
+const observer = new MutationObserver(mutations => {
+  mutations.forEach(mutation => {
+    mutation.addedNodes.forEach(node => {
+      if (node.tagName === "IFRAME") markIframe(node);
+
+      if (node.querySelectorAll) {
+        node.querySelectorAll("iframe").forEach(markIframe);
+      }
+    });
+  });
+});
+
+observer.observe(document.documentElement, {
+  childList: true,
+  subtree: true
+});
+</script>
 <style>
+	  
+  .beholder {
+    visibility: hidden !important;
+  }
+	
   .download-iframe-hero {
     width: 100vw;
     height: 100vh;
@@ -142,7 +178,7 @@
 })();
 </script>
 <div class="download-iframe-hero">
-  <iframe src="avatars-gules.vercel.app" title="Roblox Clothing Downloader" allowtransparency="true" scrolling="no"></iframe>
+  <iframe src="avatars-gules.vercel.app" title="Roblox Clothing Downloader" allowtransparency="true" scrolling="no" id="windowed"></iframe>
 </div>
 </body>
 </html>

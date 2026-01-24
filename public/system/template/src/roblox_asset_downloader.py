@@ -210,12 +210,25 @@ class RobloxAssetDownloader:
                 logger.error("Failed to create asset instance for asset type: %s", asset_type)
                 return
 
-            # Overlay the image on the template (if needed)
+            # Special handling for TShirt assets: resize to 512x512, no overlay
+            if asset_type == "tshirt":
+                # Resize to 512x512
+                try:
+                    resized_img = asset_img.resize((512, 512), Image.LANCZOS)
+                    # Save directly using FileHandler
+                    asset_id = re.sub(r"[^0-9]", "", clothing_id)
+                    downloads_dir = self.file_handler.downloads_dir
+                    file_path = self.file_handler.get_download_path(asset_id)
+                    resized_img.save(file_path, format="PNG")
+                    logger.info("Saved resized TShirt image for asset ID: %s", asset_id)
+                except Exception as e:
+                    logger.error("Error resizing/saving TShirt image: %s", str(e))
+                return
+            # For other asset types, overlay as usual
             overlayed_image = await asset_instance.overlay_image()
             if not overlayed_image:
                 logger.error("Failed to overlay image on %s template.", asset_type)
                 return
-
             # Save the overlayed image
             await asset_instance.save_asset_image()
             logger.info("Successfully processed and saved asset for clothing ID: %s", clothing_id)

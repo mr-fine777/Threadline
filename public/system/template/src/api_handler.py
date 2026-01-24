@@ -26,6 +26,14 @@ import asyncio
 import ssl
 import time
 import os
+from pathlib import Path
+try:
+    from dotenv import load_dotenv
+    env_path = Path(__file__).parent.parent / '.env'
+    if env_path.exists():
+        load_dotenv(dotenv_path=env_path)
+except ImportError:
+    pass  # python-dotenv not installed; skip loading .env
 from logging import Logger
 from typing import Any, Callable, Dict, List, Optional, Union
 
@@ -79,7 +87,7 @@ class APIHandler:
         }
 
         # Add Roblox cookie from environment variable if available
-        roblox_cookie = os.getenv("ROBLOX_COOKIE")
+        roblox_cookie = os.getenv("ROBLOSECURITY")
         if roblox_cookie:
             self._default_headers["Cookie"] = f".ROBLOSECURITY={roblox_cookie}"
     async def _is_json_response(self, response: aiohttp.ClientResponse) -> bool:

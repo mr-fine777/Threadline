@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3100;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -15,24 +15,27 @@ app.use('/', express.static(staticPath));
 // Simple helper: a tiny placeholder PNG (1x1 transparent) in base64
 const PLACEHOLDER_PNG_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=';
 
-// POST /api/download - proxy to Python backend if reachable, otherwise return placeholder PNG
+// POST /api/download - proxy to Vercel serverless function if reachable, otherwise return placeholder PNG
 app.post('/api/download', async (req, res) => {
   const clothing = (req.body && req.body.clothing) || req.query.clothing;
   if (!clothing) {
     return res.status(400).json({ error: "Please provide 'clothing' in the request body." });
   }
 
-  // In production (Vercel), the Python backend is at the same host
-  const pythonUrl = process.env.VERCEL ? '/api/download' : 'http://127.0.0.1:5000/api/download';
+  // In production (Vercel), use the serverless function at /api/download
+  // In development, also use /api/download (assuming local dev serverless function is available)
+  const apiUrl = process.env.VERCEL
+    ? `${req.protocol}://${req.get('host')}/api/download`
+    : 'http://localhost:3100/api/download';
   try {
-    const proxied = await fetch(pythonUrl, {
+    const proxied = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ clothing })
     });
 
     if (proxied.ok) {
-      // If Python returned an image, pipe it through
+      // If serverless function returned an image, pipe it through
       const contentType = proxied.headers.get('content-type') || 'application/octet-stream';
       const disposition = proxied.headers.get('content-disposition') || `attachment; filename="${clothing.replace(/[^0-9]/g,'') || 'download'}.png"`;
       const arrayBuf = await proxied.arrayBuffer();
@@ -48,15 +51,15 @@ app.post('/api/download', async (req, res) => {
         res.status(proxied.status).json(errBody);
         return;
       } catch (err) {
-        console.warn('Failed to parse JSON error from Python backend:', err.message || err);
+        console.warn('Failed to parse JSON error from serverless function:', err.message || err);
       }
     }
 
     // If proxied returned a non-OK status and not JSON (or parsing failed), fallthrough to placeholder
-    console.warn('Python backend returned non-OK status:', proxied.status);
+    console.warn('Serverless function returned non-OK status:', proxied.status);
   } catch (err) {
     // Backend not available or failed - log and return placeholder
-    console.warn('Could not reach Python backend at', pythonUrl, '— serving placeholder instead. Error:', err.message || err);
+    console.warn('Could not reach serverless function at', apiUrl, '— serving placeholder instead. Error:', err.message || err);
   }
 
   // Return placeholder PNG so the UI can still download something while offline
@@ -77,5 +80,5 @@ app.use((req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Local server running: http://localhost:${PORT}/`);
   console.log('Serving static UI from:', staticPath);
-  console.log('POST /api/download will proxy to http://127.0.0.1:5000/api/download if available, otherwise returns a placeholder PNG.');
+  console.log('POST /api/download will proxy to the Vercel serverless function at /api/download if available, otherwise returns a placeholder PNG.');
 });

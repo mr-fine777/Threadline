@@ -34,6 +34,7 @@ ROUTES = {
 CLOTHING_TEMPLATES = {
     "Shirt": "shirt_template.png",
     "Pants": "pants_template.png",
+    "Tshirt": "tshirt_template.png",
 }
 
 # Optional: Document URL structure for easy reference

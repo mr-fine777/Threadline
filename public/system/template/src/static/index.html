@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Threadline</title>
+    <link rel="icon" href="img/iconic.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+  <style>
+      html, body {
+        height: 110vh;
+        margin: 0;
+        padding: 0;
+        overflow-y: hidden;
+        user-select: none;
+        background-color: #351148;
+      }
+
+      #ripple {
+        position: fixed;
+        top: 20px;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: auto;
+        display: block;
+      }
+
+      .holder-section {
+        height: 110vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Remove background image to let ripple show */
+        background: transparent;
+        position: relative;
+        z-index: 10;
+      }
+
+      .holder-box-download {
+        color: #f4ce6e;
+        border-radius: 24px;
+        padding: 60px 40px 48px 40px;
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        margin: 40px 0;
+
+        box-shadow: 0 2px 16px 0 rgba(83,33,110,0.10);
+      }
+      .holder-box-download h1 {
+        font-size: 2.4rem;
+        font-weight: 800;
+        margin-bottom: 18px;
+        letter-spacing: 1px;
+        color: #f4ce6e;
+        text-align: left;
+        text-shadow: 0 2px 8px rgba(83,33,110,0.20);
+      }
+      .holder-box-download p {
+        font-size: 1.1rem;
+        margin-bottom: 28px;
+        color: #f4ce6e;
+        text-align: left;
+        text-shadow: 0 2px 8px rgba(83,33,110,0.20);
+      }
+      label {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #f4ce6e;
+        text-align: left;
+        width: 100%;
+      }
+      input {
+        display: block;
+        width: 100%;
+        padding: 14px 16px;
+        margin-bottom: 24px;
+        border: none;
+        border-radius: 10px;
+        background: #fff;
+        color: #53216e;
+        font-size: 1.1rem;
+        box-sizing: border-box;
+        outline: none;
+        transition: box-shadow 0.2s;
+        box-shadow: 0 2px 8px 0 rgba(83,33,110,0.08);
+      }
+      input:focus {
+        box-shadow: 0 0 0 2px #f4ce6e;
+      }
+      button {
+        display: block;
+        width: 100%;
+        padding: 14px 0;
+        background-color: #53216e;
+        color: #f4ce6e;
+        font-size: 1.15rem;
+        font-weight: 700;
+        border: 2px solid #f4ce6e;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 8px 0 rgba(83,33,110,0.08);
+      }
+      .log {
+        white-space: pre-wrap;
+        background-color: transparent;
+        padding: 12px 0 0 0;
+        border-radius: 6px;
+        margin-top: 12px;
+        color: #fff;
+        font-size: 20px;
+        min-height: 24px;
+        text-align: left;
+      }
+      /* Removed iframe styles, now using canvas */
+    </style>
+  </head>
+  <body>
+    <h1>Roblox Clothing Downloader</h1>
+
+    <p>Enter a Clothing ID or full Roblox asset URL and click "Download". The processed PNG will be returned as a download.</p>
+
+    <label for="clothing">Clothing ID or URL</label>
+    <input id="clothing" placeholder="e.g. https://www.roblox.com/catalog/... or numeric id" />
+    
+    <button id="downloadBtn">Download</button>
+
+    <div id="status" class="log"></div>
+
+    <script>
+
+  // --- Begin: ripple.html logic ---
+  (function() {
+    const DOT_COLOR = '#8949ab';
+    const BG_COLOR = '#351148';
+    const DOT_RADIUS = 3;
+    const DOT_SPACING = 40; // px, controls density
+    const WAVE_AMPLITUDE = 36; // px
+    const WAVE_LENGTH = 150; // px
+    const WAVE_SPEED = 0.18; // controls how fast the wave propagates
+    const canvas = document.getElementById('ripple');
+    const ctx = canvas.getContext('2d');
+    let width, height, DOTS_X, DOTS_Y;
+    function resizeCanvas() {
+      // Handle high-DPI screens
+      const dpr = window.devicePixelRatio || 1;
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+      ctx.scale(dpr, dpr);
+      DOTS_X = Math.floor(width / DOT_SPACING);
+      DOTS_Y = Math.floor(height / DOT_SPACING);
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let mouse = { x: width/2, y: height/2 };
+    let targetMouse = { x: width/2, y: height/2 };
+    let lastMoveTime = Date.now();
+    let idle = false;
+    window.addEventListener('mousemove', e => {
+      targetMouse.x = e.clientX;
+      targetMouse.y = e.clientY;
+      lastMoveTime = Date.now();
+      idle = false;
+    });
+
+    function drawBackgroundCircles(time) {
+      function mulberry32(a) {
+        return function() {
+          var t = a += 0x6D2B79F5;
+          t = Math.imul(t ^ t >>> 15, t | 1);
+          t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+          return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        }
+      }
+      const rand = mulberry32(123456);
+      const NUM_BG_CIRCLES = 13;
+      const circles = [];
+      for (let i = 0; i < NUM_BG_CIRCLES; i++) {
+        const cx = rand() * (width * 0.85) + width * 0.075;
+        const cy = rand() * (height * 0.85) + height * 0.075;
+        const r = 90 + rand() * 220;
+        const alpha = 0.04 + rand() * 0.09;
+        circles.push({cx, cy, r, alpha});
+      }
+      for (const c of circles) {
+        const dx = c.cx - mouse.x;
+        const dy = c.cy - mouse.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const basePhase = (dist/WAVE_LENGTH) - (time*WAVE_SPEED);
+        const wave = (
+          Math.sin(basePhase) * 0.7 +
+          Math.cos(basePhase * 0.7) * 0.3
+        ) * Math.exp(-dist/900);
+        const offset = wave * (WAVE_AMPLITUDE * 1.2);
+        ctx.beginPath();
+        ctx.arc(c.cx, c.cy + offset, c.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(137,73,171,${c.alpha.toFixed(3)})`;
+        ctx.fill();
+      }
+    }
+
+    function drawDots(time) {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = BG_COLOR;
+      ctx.fillRect(0, 0, width, height);
+      drawBackgroundCircles(time);
+      ctx.fillStyle = DOT_COLOR;
+      for (let i = 0; i < DOTS_X; i++) {
+        for (let j = 0; j < DOTS_Y; j++) {
+          const x = i * DOT_SPACING + DOT_SPACING/2;
+          const y = j * DOT_SPACING + DOT_SPACING/2;
+          const dx = x - mouse.x;
+          const dy = y - mouse.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          const wave = (
+            Math.sin((dist/WAVE_LENGTH) - (time*WAVE_SPEED)) * 0.7 +
+            Math.cos((dist/(WAVE_LENGTH*0.7)) - (time*WAVE_SPEED*0.7)) * 0.3
+          ) * Math.exp(-dist/500);
+          const offset = wave * WAVE_AMPLITUDE;
+          ctx.beginPath();
+          ctx.arc(x, y + offset, DOT_RADIUS, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    function animate(time) {
+      // Idle animation if no mouse move for 3 seconds
+      const now = Date.now();
+      if (now - lastMoveTime > 3000) {
+        idle = true;
+      } else {
+        idle = false;
+      }
+      let idleTarget = null;
+      if (idle) {
+        // Animate mouse in a gentle circle in the center
+        const t = time / 1000;
+        const radius = Math.min(width, height) * 0.18;
+        idleTarget = {
+          x: width/2 + Math.cos(t * 0.5) * radius,
+          y: height/2 + Math.sin(t * 0.7) * radius * 0.7
+        };
+      }
+      // Smoothly interpolate mouse position toward target
+      const lerp = (a, b, t) => a + (b - a) * t;
+      const smoothing = 0.12; // Lower = smoother
+      if (idle && idleTarget) {
+        mouse.x = lerp(mouse.x, idleTarget.x, smoothing);
+        mouse.y = lerp(mouse.y, idleTarget.y, smoothing);
+      } else {
+        mouse.x = lerp(mouse.x, targetMouse.x, smoothing);
+        mouse.y = lerp(mouse.y, targetMouse.y, smoothing);
+      }
+      drawDots(time/1000);
+      requestAnimationFrame(animate);
+    }
+    animate(0);
+  })();
+    </script>
+    <script>
+      const btn = document.getElementById('downloadBtn');
+      const input = document.getElementById('clothing');
+      const status = document.getElementById('status');
+
+      function log(msg){ status.textContent = msg }
+
+      btn.addEventListener('click', async () => {
+        const clothing = input.value.trim();
+        if(!clothing){ log('Please enter a clothing ID or URL'); return }
+
+        log('Requesting download...');
+
+        try{
+          // Compute API endpoint relative to the current page location so this UI can be hosted
+          // at any path (root or subdirectory). We strip trailing '/index.html' if present.
+          let base = window.location.pathname || '/';
+          if(base.endsWith('/index.html')) base = base.slice(0, -11);
+          if(!base.endsWith('/')) base = base + '/';
+          const endpoint = base + 'api/download';
+
+          const resp = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ clothing })
+          });
+
+          const contentType = resp.headers.get('content-type') || '';
+          if(!resp.ok){
+            // Try to parse JSON error
+            if(contentType.includes('application/json')){
+              const err = await resp.json();
+              log('Error: ' + (err.error || JSON.stringify(err)) );
+            } else {
+              const txt = await resp.text();
+              log('Error: ' + txt);
+            }
+            return;
+          }
+
+          if(contentType.includes('image')){
+            const blob = await resp.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            // Try to infer filename from Content-Disposition
+            const disp = resp.headers.get('content-disposition') || '';
+            let filename = 'download.png';
+            const match = /filename\*?=([^;]+)/i.exec(disp);
+            if(match && match[1]) filename = match[1].replace(/['"\s]/g,'');
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            log('Download started: ' + filename);
+            return;
+          }
+
+          // If not an image, try parse as JSON
+          if(contentType.includes('application/json')){
+            const data = await resp.json();
+            log('Response: ' + JSON.stringify(data));
+            return;
+          }
+
+          const text = await resp.text();
+          log('Response: ' + text);
+
+        }catch(err){
+          log('Network error: ' + err.message);
+        }
+      });
+    </script>
+  </body>
+</html>

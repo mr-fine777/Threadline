@@ -28,7 +28,13 @@ def handler(request):
             }
 
         # Import here to avoid cold start penalty
-        from roblox_asset_downloader import RobloxAssetDownloader
+        try:
+            from roblox_asset_downloader import RobloxAssetDownloader
+        except ImportError:
+            # Try importing from api/ if not found
+            import sys
+            sys.path.append(os.path.dirname(__file__))
+            from roblox_asset_downloader import RobloxAssetDownloader
 
         # Run the asynchronous processing synchronously for this endpoint
         downloader = RobloxAssetDownloader()

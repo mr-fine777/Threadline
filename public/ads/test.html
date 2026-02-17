@@ -2,16 +2,7 @@
 <html>
 <head>
 <style>
-
-body {
-  margin 0;
-  overflow-y: hidden;
-  overflow-x: hidden;
-}
-
-</style>
-</head>
-  <style>
+	
   .download-iframe-hero {
     width: 100vw;
     height: 100vh;
@@ -42,7 +33,44 @@ body {
   .beholder {
     visibility: hidden !important;
   }
+	
+body {
+  margin 0;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
 </style>
+	<script>
+function markIframe(iframe) {
+  if (!iframe || iframe.id === "windowed") return;
+
+  iframe.classList.add("beholder");
+}
+
+// Existing iframes
+document.querySelectorAll("iframe").forEach(markIframe);
+
+// Future iframes
+const observer = new MutationObserver(mutations => {
+  mutations.forEach(mutation => {
+    mutation.addedNodes.forEach(node => {
+      if (node.tagName === "IFRAME") markIframe(node);
+
+      if (node.querySelectorAll) {
+        node.querySelectorAll("iframe").forEach(markIframe);
+      }
+    });
+  });
+});
+
+observer.observe(document.documentElement, {
+  childList: true,
+  subtree: true
+});
+</script>
+</head>
+
 <body>
 <script>(function(s){s.dataset.zone='10622631',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 </body>

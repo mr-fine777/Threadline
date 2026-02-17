@@ -2,38 +2,7 @@
 <html>
 <head>
 <style>
-	
-  .download-iframe-hero {
-    width: 100vw;
-    height: 100vh;
-    min-height: 420px;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
-    background-color: #351148;
-    border: none;
-    box-shadow: 0 4px 24px 0 rgba(83,33,110,0.10);
-    border-radius: 0;
-    overflow: hidden;
-    border-bottom: 2px solid #f4ce6e;
-  }
-  .download-iframe-hero iframe {
-    width: 100vw;
-    height: 100vh;
-    border: none;
-    border-radius: 0;
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    display: block;
-  }
-	  
-  .beholder {
-    visibility: hidden !important;
-  }
-	
+
 body {
   margin 0;
   overflow-y: hidden;
@@ -41,37 +10,21 @@ body {
 }
 
 </style>
-	<script>
-function markIframe(iframe) {
-  if (!iframe || iframe.id === "windowed") return;
 
-  iframe.classList.add("beholder");
-}
-
-// Existing iframes
-document.querySelectorAll("iframe").forEach(markIframe);
-
-// Future iframes
-const observer = new MutationObserver(mutations => {
-  mutations.forEach(mutation => {
-    mutation.addedNodes.forEach(node => {
-      if (node.tagName === "IFRAME") markIframe(node);
-
-      if (node.querySelectorAll) {
-        node.querySelectorAll("iframe").forEach(markIframe);
-      }
-    });
-  });
-});
-
-observer.observe(document.documentElement, {
-  childList: true,
-  subtree: true
-});
-</script>
 </head>
 
 <body>
-<script>(function(s){s.dataset.zone='10622631',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<script>
+(function(wvfd){
+var d = document,
+    s = d.createElement('script'),
+    l = d.scripts[d.scripts.length - 1];
+s.settings = wvfd || {};
+s.src = "\/\/softtemperature.com\/b\/XrV.stdtG\/la0UYwWScg\/regmi9IusZSUDlOkLPXTbYk3eNiTBkx5\/M\/TTQstKNFj_cV1IODTmkhxzNQQo";
+s.async = true;
+s.referrerPolicy = 'no-referrer-when-downgrade';
+l.parentNode.insertBefore(s, l);
+})({})
+</script>
 </body>
 </html>

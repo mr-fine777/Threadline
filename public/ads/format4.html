@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* hide scrollbars */
+  background: black;
+}
+
+img {
+  margin: 0 auto;
+  position: absolute; /* fill the parent completely */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover; /* fill without stretching */
+  display: block; /* removes inline spacing below img */
+}
+
+  iframe {
+  position: absolute; /* fill the parent completely */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: none; /* remove default iframe border */
+  display: block; /* remove any inline spacing */
+}
+</style>
+</head>
+<body>
+
+<a id="randomAd" href="#" target="_blank">
+  <img id="adImage" src="">
+</a>
+
+<script>
+  const ads = [
+    {
+      link: "https://amzn.to/4aNywbL",
+      image: "https://www.padrinos.blog/threadline/imgs/rbx2.png"
+    },
+    {
+      link: "https://amzn.to/4rfLzHF",
+      image: "https://www.padrinos.blog/threadline/imgs/primer2.png"
+    },
+    {
+      link: "https://amzn.to/4dbj2zz",
+      image: "https://www.padrinos.blog/threadline/imgs/prime2.png"
+    },
+    {
+      link: "https://amzn.to/40RdBhQ",
+      image: "https://www.padrinos.blog/threadline/imgs/audible2.png"
+    },
+    {
+      link: "https://rewards.bing.com/welcome?rh=FED2BF31&ref=rafsrchae&form=ML2XE3&OCID=ML2XE3&PUBL=RewardsDO&CREA=ML2XE3",
+      image: "https://www.padrinos.blog/threadline/imgs/micro1.png"
+    },
+    {
+      link: "https://amzn.to/40qN4Ia",
+      image: "https://www.padrinos.blog/threadline/imgs/ps1.png"
+    },
+    {
+      link: "https://amzn.to/4llTsds",
+      image: "https://www.padrinos.blog/threadline/imgs/xbox1.png"
+    },
+    {
+      link: "https://amzn.to/4rlwnZw",
+      image: "https://www.padrinos.blog/threadline/imgs/ninetendo.png"
+    },
+    {
+      link: "https://drd.sh/ExBpGKB9EBOCKuGM",
+      image: "https://www.padrinos.blog/threadline/imgs/dd1.png"
+    },
+    {
+      link: "https://amzn.to/4rOiMKA",
+      image: "https://www.padrinos.blog/ads/img/fortnite.png"
+    },
+    {
+      link: "https://amzn.to/40qN9eW",
+      image: "https://www.padrinos.blog/threadline/imgs/val1.png"
+    },
+    {
+      link: "https://go.nordvpn.net/aff_c?offer_id=15&aff_id=142659&url_id=902",
+      image: "https://www.padrinos.blog/threadline/imgs/nord2.png"
+    },
+    {
+      link: "https://amzn.to/4r3KGSC",
+      image: "https://www.padrinos.blog/threadline/imgs/minecoins.png"
+    }
+  ];
+
+  // 50/50 random selection
+  const randomAd = ads[Math.floor(Math.random() * ads.length)];
+
+  document.getElementById("randomAd").href = randomAd.link;
+  document.getElementById("adImage").src = randomAd.image;
+</script>
+
+</body>
+</html>

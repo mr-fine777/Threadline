@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Random Iframe</title>
+<script>
+(function () {
+  const noop = function () {};
+  console.log = noop;
+  console.warn = noop;
+  console.error = noop;
+  console.info = noop;
+  console.debug = noop;
+})();
+</script>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* hide scrollbars */
+  background: black;
+}
+
+img {
+  margin: 0 auto;
+  position: absolute; /* fill the parent completely */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover; /* fill without stretching */
+  display: block; /* removes inline spacing below img */
+}
+
+  iframe {
+  position: absolute; /* fill the parent completely */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: none; /* remove default iframe border */
+  display: block; /* remove any inline spacing */
+}
+</style>
+</style>
+</head>
+<body>
+
+<iframe id="frame" scrolling="no"></iframe>
+
+<script>
+const sites = [
+  "https://www.rbxthread.app/ads/format4.html",
+  "https://www.rbxthread.app/ads/format5.html"
+];
+
+const randomSite = sites[Math.floor(Math.random() * sites.length)];
+document.getElementById("frame").src = randomSite;
+</script>
+
+</body>
+</html>

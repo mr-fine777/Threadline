@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  margin: 0;
+  background: black;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+</style>
+</head>
+<body>
+
+<a id="randomAd" href="#" target="_blank">
+  <img id="adImage" src="" style="width: 300px; height: 250px;">
+</a>
+
+<script>
+  const ads = [
+    {
+      link: "https://amzn.to/4aNywbL",
+      image: "https://www.padrinos.blog/ads/img/roblox.png"
+    },
+    {
+      link: "https://amzn.to/4rfLzHF",
+      image: "https://www.padrinos.blog/ads/img/primer.png"
+    },
+    {
+      link: "https://amzn.to/4dbj2zz",
+      image: "https://www.padrinos.blog/ads/img/prime.png"
+    },
+    {
+      link: "https://rewards.bing.com/welcome?rh=FED2BF31&ref=rafsrchae&form=ML2XE3&OCID=ML2XE3&PUBL=RewardsDO&CREA=ML2XE3",
+      image: "https://www.padrinos.blog/ads/img/micro2.png"
+    },
+    {
+      link: "https://amzn.to/40qN4Ia",
+      image: "https://www.padrinos.blog/ads/img/ps2.png"
+    },
+    {
+      link: "https://amzn.to/4llTsds",
+      image: "https://www.padrinos.blog/ads/img/xbox2.png"
+    },
+    {
+      link: "https://amzn.to/4rlwnZw",
+      image: "https://www.padrinos.blog/ads/img/ninetendo2.png"
+    },
+    {
+      link: "https://drd.sh/ExBpGKB9EBOCKuGM",
+      image: "https://www.padrinos.blog/ads/img/dd2.png"
+    },
+    {
+      link: "https://amzn.to/40qN9eW",
+      image: "https://www.padrinos.blog/ads/img/val2.png"
+    },
+    {
+      link: "https://amzn.to/40RdBhQ",
+      image: "https://www.padrinos.blog/ads/img/audible.png"
+    },
+    {
+      link: "https://amzn.to/4rOiMKA",
+      image: "https://www.padrinos.blog/ads/img/fortnite2.png"
+    },
+    {
+      link: "https://go.nordvpn.net/aff_c?offer_id=15&aff_id=142659&url_id=902",
+      image: "https://www.padrinos.blog/ads/img/nord.png"
+    },
+    {
+      link: "https://amzn.to/4r3KGSC",
+      image: "https://www.padrinos.blog/ads/img/mines.png"
+    }
+  ];
+
+  // 50/50 random selection
+  const randomAd = ads[Math.floor(Math.random() * ads.length)];
+
+  document.getElementById("randomAd").href = randomAd.link;
+  document.getElementById("adImage").src = randomAd.image;
+</script>
+
+</body>
+</html>

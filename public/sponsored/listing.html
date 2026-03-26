@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sponsored Game Listing</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #f9f6ff;
+      color: #53216e;
+      font-family: Arial, sans-serif;
+    }
+    .game-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .game-thumbnail {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      display: block;
+      margin: 0 auto;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .game-info {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      width: 100vw;
+      text-align: center;
+      z-index: 2;
+      background: rgba(255,255,255,0.7);
+      padding: 10px 0;
+      visibility: hidden;
+    }
+    .game-title {
+      font-size: 2.2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .game-author {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .game-like-ratio {
+      font-size: 1rem;
+      color: #f4ce6e;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <img id="gameThumbnail" class="game-thumbnail" src="" alt="Game Thumbnail" style="cursor:pointer;">
+  </div>
+  <script>
+    let selectedEntry = null;
+    let robloxUrl = null;
+    // Fetch a random listing from the Express API
+    fetch('/api/listings/random')
+      .then(res => {
+        if (!res.ok) throw new Error('No listings found.');
+        return res.json();
+      })
+      .then(listing => {
+        if (!listing || !listing.placeId) throw new Error('Invalid listing data.');
+        selectedEntry = listing;
+        const placeId = listing.placeId;
+        // Increment impressions in backend
+        fetch(`/api/listings/${placeId}/increment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ field: 'impressions' })
+        });
+        // Convert placeId to universeId, then fetch game details and thumbnail
+        fetch(`https://corsproxy.io/?https://apis.roblox.com/universes/v1/places/${placeId}/universe`)
+          .then(universeRes => {
+            if (!universeRes.ok) throw new Error('Universe ID not found.');
+            return universeRes.json();
+          })
+          .then(universeData => {
+            const universeId = universeData.universeId;
+            robloxUrl = `https://www.roblox.com/games/${placeId}`;
+            // Fetch game details
+            fetch(`https://corsproxy.io/?https://games.roblox.com/v1/games?universeIds=${universeId}`)
+              .then(detailsRes => detailsRes.ok ? detailsRes.json() : null)
+              .then(detailsData => {
+                const game = detailsData && detailsData.data && detailsData.data[0] ? detailsData.data[0] : null;
+                // Fetch thumbnail
+                fetch(`https://corsproxy.io/?https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeId}&size=768x432&format=Png&isCircular=false`)
+                  .then(thumbRes => thumbRes.ok ? thumbRes.json() : null)
+                  .then(thumbData => {
+                    let thumbUrl = '';
+                    if (thumbData) {
+                      thumbUrl = thumbData.data[0]?.thumbnails[0]?.imageUrl || '';
+                    }
+                    document.getElementById('gameThumbnail').src = thumbUrl;
+                    // Optionally, display game info overlay
+                    let likeRatio = 'N/A';
+                    if (game && typeof game.upVotes === 'number' && typeof game.downVotes === 'number') {
+                      const total = game.upVotes + game.downVotes;
+                      likeRatio = total > 0 ? ((game.upVotes / total) * 100).toFixed(1) + '%' : 'N/A';
+                    }
+                    // Create info overlay
+                    let infoDiv = document.createElement('div');
+                    infoDiv.className = 'game-info';
+                    infoDiv.innerHTML = `
+                      <div class="game-title">${game ? game.name : (listing.title || '')}</div>
+                      <div class="game-author">by ${game && game.creator ? game.creator.name : 'Unknown'}</div>
+                      <div class="game-like-ratio">Like Ratio: ${likeRatio}</div>
+                    `;
+                    document.body.appendChild(infoDiv);
+                  });
+              });
+          })
+          .catch(e => {
+            document.getElementById('gameThumbnail').style.display = 'none';
+          });
+      })
+      .catch(e => {
+        document.getElementById('gameThumbnail').style.display = 'none';
+      });
+
+    // Make image clickable to go to Roblox game page and increment clicks in backend
+    document.getElementById('gameThumbnail').addEventListener('click', function() {
+      if (selectedEntry && selectedEntry.placeId) {
+        // Increment clicks in backend
+        fetch(`/api/listings/${selectedEntry.placeId}/increment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ field: 'clicks' })
+        });
+        if (robloxUrl) {
+          window.location.href = robloxUrl;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

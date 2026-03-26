@@ -1,4 +1,8 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/api/listings", "destination": "/api/listings.js" },
+    { "source": "/api/listings/:match*", "destination": "/api/listings.js" }
+  ]
 }

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html><head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DGE8CB8TE3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-DGE8CB8TE3');
+</script>
+
+<style>
+
+.space-between {
+    margin-top: 200px !important;
+}
+
+.registry-space {
+	text-align: center;
+	justify-content: center;
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+#access_code {
+    width: 80%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid #f4ce6e;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #53216e;
+    text-align: center;
+    font-size: 16px;
+}
+
+#login-button-ros {
+    background-color: #53216e;
+    border: 2px solid #f4ce6e;
+    color: #f4ce6e;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 8px 0;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Style for the submission-item-table */
+#submission-item-table {
+  width: 100%;
+  background: #fff;
+  color: #53216e;
+  border-collapse: collapse;
+  margin: 24px 0 0 0;
+  box-shadow: 0 2px 8px rgba(83,33,110,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+#submission-item-table th, #submission-item-table td {
+  padding: 14px 18px;
+  text-align: center;
+  font-size: 16px;
+}
+#submission-item-table tr:first-child td {
+  font-weight: bold;
+  background: #f4ce6e;
+  color: #53216e;
+  border-bottom: 2px solid #53216e;
+}
+#submission-item-table tr:not(:first-child):hover {
+  background: #f9f6ff;
+}
+#submission-item-table img.thumbnail {
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(83,33,110,0.10);
+  margin-bottom: 4px;
+  max-width: 96px;
+  max-height: 48px;
+}
+
+#total-form-entry > td {
+  border-top: 2px solid #f4ce6e !important;
+}
+
+
+
+#placeInput {
+  padding: 12px;
+  background: white;
+  border-radius: 4px;
+  border: 2px solid #f4ce6e;
+  font-size: 1rem;
+  color: #53216e;
+}
+
+#fetchPlaceBtn {
+  padding: 12px;
+  background: white;
+  border-radius: 4px;
+  border: 2px solid #f4ce6e;
+  font-size: 1rem;
+  color: #53216e;
+}
+
+</style>
+
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threadline</title>
+    <link rel="icon" href="img/iconic.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+<!-- Interstitial Modal for Access Code -->
+<div id="interstitial" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(83,33,110,0.25);backdrop-filter:blur(8px);">
+  <div style="background:#fff;border-radius:16px;box-shadow:0 4px 32px rgba(83,33,110,0.15);padding:40px 32px;display:flex;flex-direction:column;align-items:center;min-width:320px;max-width:90vw;">
+    <h2 style="color:#53216e;margin-bottom:18px;text-align:center;">Enter your Threadline access code here:</h2>
+    <input id="accessCodeInput" type="text" maxlength="21" style="width:260px;padding:12px 16px;font-size:18px;border:2px solid #f4ce6e;border-radius:6px;text-align:center;color:#53216e;background:#f9f6ff;margin-bottom:12px;outline:none;" autocomplete="off" autofocus>
+    <button id="accessCodeBtn" style="background:#53216e;color:#f4ce6e;border:none;border-radius:6px;padding:10px 28px;font-size:16px;cursor:pointer;font-weight:bold;margin-bottom:8px;">Submit</button>
+    <div id="accessCodeError" style="color:#d32f2f;font-size:15px;height:22px;text-align:center;"></div>
+  </div>
+</div>
+<div id="mainContent" style="filter:blur(0);">
+<div class="container">
+  <div class="logo">
+    <a href="index.html">
+      <img src="img/img.png" style="max-height: 75px; user-select: none;">
+    </a>
+  </div>
+        <div class="header-dropdown">
+            <button id="menuToggle" class="btn dropdown-toggle" aria-expanded="false" aria-controls="subheaderMenu">☰</button>
+        </div>
+</div>
+<!-- Subheader menu: full-width block under the header with a 4x2 table (4 columns × 2 rows) -->
+<div id="subheaderMenu" class="subheader-menu" role="navigation" aria-label="Subheader menu" aria-hidden="true">
+    <table class="menu-table" role="presentation">
+        <tbody>
+            <tr>
+                <td>
+                    <div class="menu-title">Download</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="https://addons.mozilla.org/en-US/firefox/addon/threadline/">Firefox</a>
+                        <a class="menu-link" href="https://chromewebstore.google.com/detail/threadline/jaepjofibedopopohhifnaohihambnco">Chrome</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="menu-title">Tools</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="index.html">Download Classic Clothing</a>
+                        <a class="menu-link" href="avatar-corrector.html">Avatar Corrector</a>
+                        <a class="menu-link" href="premium.html">Get Premium</a>
+                        <a class="menu-link" href="temp/bash/fast/sponsored.html">Sponsored Listings</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="menu-title">About</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="index.html#about">About Threadline</a>
+                        <a class="menu-link" href="blog.html">Blog</a>
+                        <a class="menu-link" href="changelog.html">Changelog</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="menu-title">Legal</div>
+                    <div class="menu-placeholder">
+                        <a class="menu-link" href="tos.html#privacy">Privacy</a>
+                        <a class="menu-link" href="tos.html#terms">Terms</a>
+                        <a class="menu-link" href="contact.html">Contact</a>
+                    </div>
+                </td>
+            </tr>
+
+      <tr>
+        <td>
+          <!-- Reserved: add more Download-related items here -->
+        </td>
+        <td>
+          <!-- Reserved: add more Tools-related items here -->
+        </td>
+        <td>
+          <!-- Reserved: add more About-related items here -->
+        </td>
+        <td>
+          <!-- Reserved: add more Legal-related items here -->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<script>
+(function(){
+    const toggle = document.getElementById('menuToggle');
+    const menu = document.getElementById('subheaderMenu');
+    if (!toggle || !menu) return;
+    function setOpen(open) {
+        const show = !!open;
+        menu.classList.toggle('open', show);
+        toggle.setAttribute('aria-expanded', show);
+        menu.setAttribute('aria-hidden', !show);
+    }
+    // sync initial state (menu is hidden by default unless `.open` is present)
+    setOpen(menu.classList.contains('open'));
+    toggle.addEventListener('click', function(e){
+        e.stopPropagation();
+        setOpen(!menu.classList.contains('open'));
+    });
+    document.addEventListener('click', function(e){
+        if (!menu.contains(e.target) && e.target !== toggle) setOpen(false);
+    });
+    document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape') setOpen(false);
+    });
+})();
+</script>
+<div class="space-between">
+</div>
+
+<div id="terms-privacy" style="margin: 0 auto; width:80%; display: flex; align-items: center; justify-content: center; flex-direction: column; height: 90%;" class="article-card">
+    <h1 id="sponsored-listings">Sponsored Listings</h1>
+    <article class="login-session-registry">
+    <div class="registry-space">
+      <input type="text" id="placeInput" placeholder="Enter Roblox place link or ID">
+      <button id="fetchPlaceBtn" type="button"><i class="fa-solid fa-plus"></i></button>
+      <div id="result" class="result"></div>
+      <div id="error" class="error"></div>
+    </div>
+    </article>
+    <!-- INSERT INFORMATION HERE -->
+    <table id="submission-item-table"><tbody><tr>
+        <td>THUMBNAIL</td>
+        <td>AUTHOR</td>
+        <td>GAME NAME</td>
+        <td>LIKES</td>
+        <td>IMPRESSIONS</td>
+        <td>CLICKS</td>
+        <td>CTR</td>
+        <td>MANAGE</td>
+      </tr>
+      <tr id="total-form-entry">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr></tbody></table>
+</div>
+<div class="bottom-flex">
+</div>
+
+<div class="footer-main">
+  <div class="footer-holster">
+    <div class="footer-left">
+      <a href="index.html">
+        <img src="img/img.png" style="max-height: 60px; user-select: none;">
+      </a>
+        <p id="rights">© 2026 Threadline. All rights reserved.</p>
+    </div>
+    <div class="footer-right">
+      <a class="footer-link" href="index.html#about">About</a>
+      <a class="footer-link" href="blog.html">Blog</a>
+      <a class="footer-link" href="changelog.html">Changelog</a>
+      <a class="footer-link" href="tos.html#privacy">Privacy</a>
+      <a class="footer-link" href="tos.html#terms">Terms</a>
+      <a class="footer-link" href="contact.html">Contact</a>
+    </div>
+  </div>
+</div>
+<script>
+let threadlineAccessCode = null;
+
+function showInterstitial() {
+  document.getElementById('interstitial').style.display = 'flex';
+  document.getElementById('mainContent').style.filter = 'blur(8px)';
+  document.getElementById('accessCodeInput').value = '';
+  document.getElementById('accessCodeError').textContent = '';
+  threadlineAccessCode = null;
+}
+
+function hideInterstitial() {
+  document.getElementById('interstitial').style.display = 'none';
+  document.getElementById('mainContent').style.filter = 'blur(0)';
+}
+
+function validateAccessCode(code) {
+  return typeof code === 'string' && code.length === 21;
+}
+
+function extractPlaceId(input) {
+  const urlMatch = input.match(/roblox.com\/(games|places)\/(\d+)/i);
+  if (urlMatch) return urlMatch[2];
+  const idMatch = input.match(/^(\d{6,})$/);
+  if (idMatch) return idMatch[1];
+  return null;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function clearTableExceptHeader() {
+  const table = document.getElementById('submission-item-table');
+  if (!table) return;
+  // Remove all rows except the first (header)
+  while (table.rows.length > 1) table.deleteRow(1);
+  // Add placeholder row
+  const row = table.insertRow(-1);
+  row.id = 'total-form-entry';
+  for (let i = 0; i < 7; i++) row.insertCell();
+  row.cells[4].textContent = '0';
+  row.cells[5].textContent = '0';
+  row.cells[6].textContent = '0';
+}
+
+function renderListings(listings) {
+  clearTableExceptHeader();
+  const table = document.getElementById('submission-item-table');
+  if (!table) return;
+  if (!Array.isArray(listings) || listings.length === 0) return;
+  // Remove placeholder row
+  const placeholder = document.getElementById('total-form-entry');
+  if (placeholder) placeholder.parentNode.removeChild(placeholder);
+  listings.forEach((entry, idx) => {
+    const newRow = table.insertRow(-1);
+    for (let i = 0; i < 8; i++) newRow.insertCell();
+    // If thumbUrl or author is missing, fetch from Roblox APIs
+    if (!entry.thumbUrl || !entry.author) {
+      fetch(`https://corsproxy.io/?https://apis.roblox.com/universes/v1/places/${entry.placeId}/universe`)
+        .then(universeRes => universeRes.ok ? universeRes.json() : null)
+        .then(universeData => {
+          if (!universeData) return;
+          const universeId = universeData.universeId;
+          // Fetch votes (likes/dislikes) from the documented endpoint
+          fetch(`https://corsproxy.io/?https://games.roblox.com/v1/games/${universeId}/votes`)
+            .then(votesRes => votesRes.ok ? votesRes.json() : null)
+            .then(votesData => {
+              let likes = null;
+              let downVotes = null;
+              if (votesData && typeof votesData.upVotes === 'number' && typeof votesData.downVotes === 'number') {
+                likes = votesData.upVotes;
+                downVotes = votesData.downVotes;
+                console.log('Votes endpoint:', likes, downVotes);
+              } else {
+                console.log('Votes endpoint did not return valid data for universeId', universeId, votesData);
+              }
+              // Calculate like ratio
+              let likeRatio = '';
+              if (likes !== null && downVotes !== null) {
+                const total = likes + downVotes;
+                likeRatio = total > 0 ? ((likes / total) * 100).toFixed(1) + '%' : 'N/A';
+              } else if (likes !== null) {
+                likeRatio = likes.toString();
+              } else {
+                likeRatio = entry.likeRatio || '';
+                console.log('Could not fetch likes from votes endpoint for placeId', entry.placeId);
+              }
+              // Set likes and likeRatio in the row
+              newRow.cells[3].textContent = likeRatio;
+              newRow.cells[3].title = `Like Ratio: ${likeRatio}`;
+              // Fetch author (creator name) from games details endpoint
+              fetch(`https://corsproxy.io/?https://games.roblox.com/v1/games?universeIds=${universeId}`)
+                .then(detailsRes => detailsRes.ok ? detailsRes.json() : null)
+                .then(detailsData => {
+                  let author = 'Unknown';
+                  if (detailsData && detailsData.data && detailsData.data[0] && detailsData.data[0].creator && detailsData.data[0].creator.name) {
+                    author = detailsData.data[0].creator.name;
+                  }
+                  // Continue with thumbnail
+                  fetch(`https://corsproxy.io/?https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeId}&size=768x432&format=Png&isCircular=false`)
+                    .then(thumbRes => thumbRes.ok ? thumbRes.json() : null)
+                    .then(thumbData => {
+                      const thumbUrl = thumbData && thumbData.data && thumbData.data[0]?.thumbnails[0]?.imageUrl || '';
+                      newRow.cells[0].innerHTML = thumbUrl ? `<img src="${thumbUrl}" class="thumbnail" style="max-height:48px;vertical-align:middle;">` : '';
+                      newRow.cells[1].textContent = author;
+                    });
+                });
+            });
+        });
+    } else {
+      newRow.cells[0].innerHTML = entry.thumbUrl ? `<img src="${entry.thumbUrl}" class="thumbnail" style="max-height:48px;vertical-align:middle;">` : '';
+      newRow.cells[1].textContent = entry.author || 'Unknown';
+    }
+    newRow.cells[2].textContent = entry.title || '';
+
+    // --- Calculate Like Ratio and CTR dynamically ---
+    let likeRatio = '';
+    if (typeof entry.likes === 'number' && typeof entry.impressions === 'number') {
+      // If you want like ratio as likes/impressions
+      likeRatio = entry.impressions > 0 ? ((entry.likes / entry.impressions) * 100).toFixed(1) + '%' : (entry.likes ? '100%' : '0%');
+    } else if (typeof entry.likes === 'number') {
+      likeRatio = entry.likes.toString();
+    } else {
+      likeRatio = entry.likeRatio || '';
+    }
+    newRow.cells[3].textContent = likeRatio;
+    newRow.cells[3].title = `Like Ratio: ${likeRatio}`;
+
+    newRow.cells[4].textContent = entry.impressions || 0;
+    newRow.cells[5].textContent = entry.clicks || 0;
+
+    // --- Calculate CTR dynamically ---
+    let ctr = '';
+    if (typeof entry.impressions === 'number' && entry.impressions > 0 && typeof entry.clicks === 'number') {
+      ctr = Math.round((entry.clicks / entry.impressions) * 100) + '%';
+    } else {
+      ctr = '0%';
+    }
+    newRow.cells[6].textContent = ctr;
+
+    newRow.cells[7].innerHTML = `
+      <button class="manage-btn manage-edit" title="Edit" style="background:#f4ce6e;color:#53216e;border:none;border-radius:4px;padding:4px 10px;margin-right:6px;cursor:pointer;font-weight:bold;"><i class="fa-solid fa-pencil"></i></button>
+      <button class="manage-btn manage-delete" title="Delete" style="background:#53216e;color:#fff;border:none;border-radius:4px;padding:4px 10px;cursor:pointer;font-weight:bold;"><i class="fa-solid fa-x"></i></button>
+      <div class="edit-box" style="display:none;margin-top:8px;"></div>
+    `;
+
+    // Add event listeners for edit and delete
+    const editBtn = newRow.cells[7].querySelector('.manage-edit');
+    const deleteBtn = newRow.cells[7].querySelector('.manage-delete');
+    const editBox = newRow.cells[7].querySelector('.edit-box');
+
+    if (editBtn) {
+      editBtn.addEventListener('click', function() {
+        // Toggle edit box
+        if (editBox.style.display === 'none') {
+          editBox.innerHTML = `
+            <input type="text" class="edit-placeid-input" value="${entry.placeId}" style="padding:6px 10px;font-size:15px;border:1.5px solid #f4ce6e;border-radius:4px;width:120px;"> 
+            <button class="edit-save-btn" style="background:#53216e;color:#f4ce6e;border:none;border-radius:4px;padding:4px 10px;font-weight:bold;">Save</button>
+            <button class="edit-cancel-btn" style="background:#f4ce6e;color:#53216e;border:none;border-radius:4px;padding:4px 10px;font-weight:bold;">Cancel</button>
+            <div class="edit-error" style="color:#d32f2f;font-size:13px;margin-top:4px;"></div>
+          `;
+          editBox.style.display = 'block';
+          // Save and Cancel logic
+          const saveBtn = editBox.querySelector('.edit-save-btn');
+          const cancelBtn = editBox.querySelector('.edit-cancel-btn');
+          const input = editBox.querySelector('.edit-placeid-input');
+          const errorDiv = editBox.querySelector('.edit-error');
+          saveBtn.addEventListener('click', function() {
+            const newPlaceId = input.value.trim();
+            if (!/^\d{6,}$/.test(newPlaceId)) {
+              errorDiv.textContent = 'Invalid place ID.';
+              return;
+            }
+            // Fetch new title from Roblox API
+            fetch(`https://corsproxy.io/?https://apis.roblox.com/universes/v1/places/${newPlaceId}/universe`)
+              .then(universeRes => {
+                if (!universeRes.ok) throw new Error('Universe ID not found.');
+                return universeRes.json();
+              })
+              .then(universeData => {
+                const universeId = universeData.universeId;
+                return fetch(`https://corsproxy.io/?https://games.roblox.com/v1/games?universeIds=${universeId}`)
+                  .then(detailsRes => {
+                    if (!detailsRes.ok) throw new Error('Game details not found.');
+                    return detailsRes.json();
+                  })
+                  .then(detailsData => {
+                    const game = detailsData.data && detailsData.data[0] ? detailsData.data[0] : {};
+                    const newTitle = game.name || '';
+                    // Delete the original entry first
+                    fetch(`/api/listings?code=${encodeURIComponent(threadlineAccessCode)}&placeId=${encodeURIComponent(entry.placeId)}`, {
+                      method: 'DELETE',
+                    })
+                    .then(() => {
+                      // Add the new entry with the new title
+                      fetch('/api/listings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          placeId: newPlaceId,
+                          title: newTitle,
+                          likes: entry.likes,
+                          code: threadlineAccessCode,
+                          impressions: entry.impressions,
+                          clicks: entry.clicks
+                        })
+                      })
+                      .then(res => res.json())
+                      .then(data => {
+                        if (data.error) {
+                          errorDiv.textContent = data.error;
+                        } else {
+                          fetchListingsForCode(threadlineAccessCode);
+                        }
+                      })
+                      .catch(() => {
+                        errorDiv.textContent = 'Failed to update entry.';
+                      });
+                    })
+                    .catch(() => {
+                      errorDiv.textContent = 'Failed to delete original entry.';
+                    });
+                  });
+              })
+              .catch(e => {
+                errorDiv.textContent = e.message || 'Failed to fetch new game title.';
+              });
+          });
+          cancelBtn.addEventListener('click', function() {
+            editBox.style.display = 'none';
+          });
+        } else {
+          editBox.style.display = 'none';
+        }
+      });
+    }
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', function() {
+        if (!confirm('Are you sure you want to delete this entry?')) return;
+        // Delete entry from MongoDB (requires backend DELETE endpoint)
+        fetch(`/api/listings?code=${encodeURIComponent(threadlineAccessCode)}&placeId=${encodeURIComponent(entry.placeId)}`, {
+          method: 'DELETE',
+        })
+        .then(res => res.json())
+        .then(data => {
+          fetchListingsForCode(threadlineAccessCode);
+        })
+        .catch(() => {
+          alert('Failed to delete entry.');
+        });
+      });
+    }
+  });
+}
+
+function fetchListingsForCode(code) {
+  // Fetch all listings for this code from the API
+  fetch(`/api/listings?code=${encodeURIComponent(code)}`)
+    .then(res => res.ok ? res.json() : [])
+    .then(data => {
+      // Data should be an array of listings for this code
+      renderListings(data.map(entry => ({
+        thumbUrl: entry.thumbUrl || '',
+        author: entry.author || '',
+        title: entry.title || '',
+        likeRatio: entry.likeRatio || '',
+        impressions: entry.impressions || 0,
+        clicks: entry.clicks || 0,
+        ctr: entry.ctr || '',
+        placeId: entry.placeId
+      })));
+    })
+    .catch(() => renderListings([]));
+}
+
+function fetchPlaceInfo() {
+  document.getElementById('result').innerHTML = '';
+  document.getElementById('error').textContent = '';
+  const input = document.getElementById('placeInput').value.trim();
+  let placeId = extractPlaceId(input);
+  if (!placeId) {
+    document.getElementById('error').textContent = 'Invalid place link or ID.';
+    return;
+  }
+  if (!threadlineAccessCode) {
+    document.getElementById('error').textContent = 'Access code required.';
+    showInterstitial();
+    return;
+  }
+  // Check if already 5 listings for this code, and if placeId is duplicate
+  fetch(`/api/listings?code=${encodeURIComponent(threadlineAccessCode)}`)
+    .then(res => res.ok ? res.json() : [])
+    .then(listings => {
+      if (Array.isArray(listings)) {
+        if (listings.length >= 5) {
+          document.getElementById('error').textContent = 'You can only have 5 sponsored listings per code.';
+          return;
+        }
+        if (listings.some(entry => entry.placeId == placeId)) {
+          document.getElementById('error').textContent = 'This place is already listed for your code.';
+          return;
+        }
+      }
+      // Check if placeId exists for any code (global uniqueness)
+      fetch(`/api/listings?placeId=${encodeURIComponent(placeId)}`)
+        .then(res2 => res2.ok ? res2.json() : [])
+        .then(globalEntries => {
+          if (Array.isArray(globalEntries) && globalEntries.length > 0) {
+            document.getElementById('error').textContent = 'This place is already sponsored.';
+            return;
+          }
+          // Continue with Roblox API fetch
+          fetch(`https://corsproxy.io/?https://apis.roblox.com/universes/v1/places/${placeId}/universe`)
+            .then(universeRes => {
+              if (!universeRes.ok) throw new Error('Universe ID not found.');
+              return universeRes.json();
+            })
+            .then(universeData => {
+              const universeId = universeData.universeId;
+              return fetch(`https://corsproxy.io/?https://games.roblox.com/v1/games?universeIds=${universeId}`)
+                .then(detailsRes => {
+                  if (!detailsRes.ok) throw new Error('Game details not found.');
+                  return detailsRes.json().then(detailsData => ({ detailsData, universeId }));
+                });
+            })
+            .then(({ detailsData, universeId }) => {
+              const game = detailsData.data[0];
+              let thumbUrl = '';
+              fetch(`https://corsproxy.io/?https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeId}&size=768x432&format=Png&isCircular=false`)
+                .then(thumbRes => thumbRes.ok ? thumbRes.json() : null)
+                .then(thumbData => {
+                  if (thumbData) {
+                    thumbUrl = thumbData.data[0]?.thumbnails[0]?.imageUrl || '';
+                  }
+                  let likeRatio = 'N/A';
+                  let likes = 0;
+                  if (game && typeof game.upVotes === 'number' && typeof game.downVotes === 'number') {
+                    const total = game.upVotes + game.downVotes;
+                    likeRatio = total > 0 ? ((game.upVotes / total) * 100).toFixed(1) + '%' : 'N/A';
+                    likes = game.upVotes;
+                  }
+
+                  // Upload to MongoDB via Express API, include code and all required fields
+                  fetch('/api/listings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      placeId: placeId,
+                      title: game.name || '',
+                      likes: likes,
+                      code: threadlineAccessCode,
+                      impressions: 0,
+                      clicks: 0
+                    })
+                  })
+                  .then(apiRes => apiRes.json())
+                  .then(apiData => {
+                    document.getElementById('result').innerHTML = 'Listing added!';
+                    // Refresh listings for this code
+                    fetchListingsForCode(threadlineAccessCode);
+                  })
+                  .catch(apiErr => {
+                    document.getElementById('error').textContent = 'Failed to add to database: ' + apiErr.message;
+                  });
+                });
+            })
+            .catch(e => {
+              document.getElementById('error').textContent = e.message;
+            });
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Interstitial logic
+  showInterstitial();
+  document.getElementById('accessCodeBtn').addEventListener('click', function() {
+    const code = document.getElementById('accessCodeInput').value.trim();
+    if (!validateAccessCode(code)) {
+      document.getElementById('accessCodeError').textContent = 'Invalid Threadline Access Code';
+      return;
+    }
+    threadlineAccessCode = code;
+    hideInterstitial();
+    fetchListingsForCode(threadlineAccessCode);
+  });
+  document.getElementById('accessCodeInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('accessCodeBtn').click();
+  });
+
+  // Always require code on reload
+  window.addEventListener('beforeunload', function() {
+    showInterstitial();
+  });
+
+  // Add event listeners for Add button and Enter key
+  var btn = document.getElementById('fetchPlaceBtn');
+  var input = document.getElementById('placeInput');
+  if (btn) btn.addEventListener('click', fetchPlaceInfo);
+  if (input) input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') fetchPlaceInfo();
+  });
+});
+// NOTE: You must add a DELETE endpoint to your backend for this to work:
+// app.delete('/api/listings', async (req, res) => {
+//   const { code, placeId } = req.query;
+//   if (!code || !placeId) return res.status(400).json({ error: 'code and placeId required' });
+//   try {
+//     const result = await Listing.deleteOne({ code, placeId });
+//     res.json({ success: true, deletedCount: result.deletedCount });
+//   } catch (e) {
+//     res.status(500).json({ error: e.message });
+//   }
+// });
+</script>
+</body>
+</html>

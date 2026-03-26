@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Roblox Place Info Fetcher</title>
+	<style>
+		body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 2em; }
+		.container { background: #fff; max-width: 500px; margin: auto; padding: 2em; border-radius: 10px; box-shadow: 0 2px 8px #0001; }
+		input[type="text"] { width: 80%; padding: 0.5em; font-size: 1em; }
+		button { padding: 0.5em 1em; font-size: 1em; margin-left: 0.5em; }
+		.result { margin-top: 2em; }
+		.thumbnail { max-width: 100%; border-radius: 8px; margin-bottom: 1em; }
+		.error { color: #c00; margin-top: 1em; }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h2>Roblox Place Info Fetcher</h2>
+		<input type="text" id="placeInput" placeholder="Enter Roblox place link or ID">
+		<button onclick="fetchPlaceInfo()">Fetch Info</button>
+		<div id="result" class="result"></div>
+		<div id="error" class="error"></div>
+	</div>
+	<script>
+	async function fetchPlaceInfo() {
+		document.getElementById('result').innerHTML = '';
+		document.getElementById('error').textContent = '';
+		const input = document.getElementById('placeInput').value.trim();
+		let placeId = extractPlaceId(input);
+		if (!placeId) {
+			document.getElementById('error').textContent = 'Invalid place link or ID.';
+			return;
+		}
+		try {
+			// 1. Get universeId from placeId
+			const universeRes = await fetch(`https://corsproxy.io/?https://apis.roblox.com/universes/v1/places/${placeId}/universe`);
+			if (!universeRes.ok) throw new Error('Universe ID not found.');
+			const universeData = await universeRes.json();
+			const universeId = universeData.universeId;
+			// 2. Get game details
+			const detailsRes = await fetch(`https://corsproxy.io/?https://games.roblox.com/v1/games?universeIds=${universeId}`);
+			if (!detailsRes.ok) throw new Error('Game details not found.');
+			const detailsData = await detailsRes.json();
+			const game = detailsData.data[0];
+			// 3. Get main game listing thumbnail (not icon)
+			let thumbUrl = '';
+			try {
+				const thumbRes = await fetch(`https://corsproxy.io/?https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeId}&size=768x432&format=Png&isCircular=false`);
+				if (thumbRes.ok) {
+					const thumbData = await thumbRes.json();
+					thumbUrl = thumbData.data[0]?.thumbnails[0]?.imageUrl || '';
+				}
+			} catch {}
+			// 4. Like ratio
+			let likeRatio = 'N/A';
+			if (game && typeof game.upVotes === 'number' && typeof game.downVotes === 'number') {
+				const total = game.upVotes + game.downVotes;
+				likeRatio = total > 0 ? ((game.upVotes / total) * 100).toFixed(1) + '%' : 'N/A';
+			}
+			// 5. Display
+			document.getElementById('result').innerHTML = `
+				${thumbUrl ? `<img src="${thumbUrl}" class="thumbnail">` : ''}
+				<h3>${escapeHtml(game.name)}</h3>
+				<p><strong>Author:</strong> ${escapeHtml(game.creator?.name || 'Unknown')}</p>
+				<p><strong>Like Ratio:</strong> ${likeRatio}</p>
+				<p><strong>Universe ID:</strong> ${universeId}</p>
+			`;
+		} catch (e) {
+			document.getElementById('error').textContent = e.message;
+		}
+	}
+
+	function extractPlaceId(input) {
+		// Accepts full URL or just the ID
+		const urlMatch = input.match(/roblox.com\/(games|places)\/(\d+)/i);
+		if (urlMatch) return urlMatch[2];
+		const idMatch = input.match(/^(\d{6,})$/);
+		if (idMatch) return idMatch[1];
+		return null;
+	}
+
+	function escapeHtml(text) {
+		const div = document.createElement('div');
+		div.textContent = text;
+		return div.innerHTML;
+	}
+	</script>
+</body>
+</html>

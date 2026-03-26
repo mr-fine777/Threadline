@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DGE8CB8TE3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-DGE8CB8TE3');
+</script>
+<meta charset="UTF-8">
+<title>Ad Rotator</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 300px;
+    height: 250px;
+    overflow: hidden;
+  }
+
+  iframe {
+    width: 300px;
+    height: 250px;
+    border: none;
+  }
+</style>
+</head>
+
+<body>
+
+<iframe id="adFrame"></iframe>
+
+<script>
+  const ads = [
+    "https://www.rbxthread.app/ads/format2.html",
+    "https://www.rbxthread.app/ads/format2.html"
+  ];
+
+  const randomAd = ads[Math.floor(Math.random() * ads.length)];
+  document.getElementById("adFrame").src = randomAd;
+</script>
+
+</body>
+</html>

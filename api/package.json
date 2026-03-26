@@ -1,0 +1,9 @@
+{
+  "name": "threadline-api",
+  "version": "1.0.0",
+  "main": "listings.js",
+  "type": "commonjs",
+  "dependencies": {
+    "mongoose": "^7.0.3"
+  }
+}

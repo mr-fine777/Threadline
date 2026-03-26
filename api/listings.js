@@ -4,7 +4,11 @@
 const mongoose = require('mongoose');
 
 // Use the 'Threadline' database and 'rbxthread' collection inside 'sponsored'
-const mongoUri = process.env.MONGO_URI || 'mongodb+srv://edmundbrady777_db_user:6GKQTa8IuQk4nUhu@threadline.jiqs2of.mongodb.net/Threadline?retryWrites=true&w=majority&appName=Threadline';
+const mongoUri = process.env.MONGO_URI;
+
+if (!mongoUri) {
+  throw new Error('MONGO_URI environment variable must be set');
+}
 
 let conn = null;
 async function connectToDatabase() {

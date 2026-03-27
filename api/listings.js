@@ -77,21 +77,40 @@ async function handler(req, res) {
   }
 
   if (method === 'POST') {
-    // Add a new listing or update title/likes if exists
+    // Add a new listing or update title/author/thumb/likes if exists
     const { placeId, title, code, impressions, clicks } = req.body;
     if (!placeId) return res.status(400).json({ error: 'placeId required' });
     if (!code) return res.status(400).json({ error: 'code required' });
     try {
-      let likePercent = 0;
+      // Fetch Roblox game details using multiget endpoint
       let gameTitle = title || '';
+      let author = '';
+      let thumbUrl = '';
+      let likePercent = 0;
       let universeId = null;
       try {
-        const universeRes = await fetch(`https://apis.roblox.com/universes/v1/places/${placeId}/universe`);
-        if (universeRes.ok) {
-          const universeData = await universeRes.json();
-          universeId = universeData.universeId;
+        const detailsRes = await fetch(`https://games.roblox.com/v1/games/multiget-place-details?placeIds=${placeId}`);
+        if (detailsRes.ok) {
+          const detailsData = await detailsRes.json();
+          if (Array.isArray(detailsData) && detailsData[0]) {
+            const game = detailsData[0];
+            gameTitle = game.name || gameTitle;
+            author = (game.builder && game.builder.name) ? game.builder.name : '';
+            universeId = game.universeId;
+          }
         }
       } catch {}
+      // Fetch thumbnail
+      try {
+        const thumbRes = await fetch(`https://thumbnails.roblox.com/v1/places/${placeId}/icons?format=Png&isCircular=false&size=150x150`);
+        if (thumbRes.ok) {
+          const thumbData = await thumbRes.json();
+          if (thumbData.data && thumbData.data[0] && thumbData.data[0].imageUrl) {
+            thumbUrl = thumbData.data[0].imageUrl;
+          }
+        }
+      } catch {}
+      // Fetch like percent
       if (universeId) {
         try {
           const votesRes = await fetch(`https://games.roblox.com/v1/games/${universeId}/votes`);
@@ -103,18 +122,12 @@ async function handler(req, res) {
             }
           }
         } catch {}
-        try {
-          const detailsRes = await fetch(`https://games.roblox.com/v1/games?universeIds=${universeId}`);
-          if (detailsRes.ok) {
-            const detailsData = await detailsRes.json();
-            const game = detailsData.data && detailsData.data[0] ? detailsData.data[0] : {};
-            if (game.name) gameTitle = game.name;
-          }
-        } catch {}
       }
       let listing = await Listing.findOne({ placeId, code });
       if (listing) {
         if (gameTitle) listing.title = gameTitle;
+        if (author) listing.author = author;
+        if (thumbUrl) listing.thumbUrl = thumbUrl;
         listing.likes = likePercent;
         if (code) listing.code = code;
         if (typeof impressions === 'number') listing.impressions = impressions;
@@ -129,12 +142,38 @@ async function handler(req, res) {
           likes: likePercent,
           code,
           impressions: typeof impressions === 'number' ? impressions : 0,
-          clicks: typeof clicks === 'number' ? clicks : 0
+          clicks: typeof clicks === 'number' ? clicks : 0,
+          author,
+          thumbUrl
         });
       }
       return res.json(listing);
     } catch (e) {
-      return res.status(500).json({ error: e.message });
+      // If Roblox API fails, still allow entry with minimal info
+      try {
+        let listing = await Listing.findOne({ placeId, code });
+        if (listing) {
+          if (title) listing.title = title;
+          if (code) listing.code = code;
+          if (typeof impressions === 'number') listing.impressions = impressions;
+          if (typeof clicks === 'number') listing.clicks = clicks;
+          await listing.save();
+        } else {
+          const count = await Listing.countDocuments({ code });
+          if (count >= 5) return res.status(400).json({ error: 'You can only have 5 sponsored listings per code.' });
+          listing = await Listing.create({
+            placeId,
+            title: title || '',
+            likes: 0,
+            code,
+            impressions: typeof impressions === 'number' ? impressions : 0,
+            clicks: typeof clicks === 'number' ? clicks : 0
+          });
+        }
+        return res.json(listing);
+      } catch (err2) {
+        return res.status(500).json({ error: err2.message });
+      }
     }
   }
 
@@ -146,7 +185,52 @@ async function handler(req, res) {
       if (code) query.code = code;
       if (placeId) query.placeId = placeId;
       const listings = await Listing.find(query);
-      return res.json(listings);
+      // Attach author and thumbUrl if missing (for legacy entries)
+      const listingsWithMeta = await Promise.all(listings.map(async (entry) => {
+        let updated = false;
+        if (!entry.author || !entry.thumbUrl || !entry.title || typeof entry.likes !== 'number') {
+          // Fetch Roblox info
+          try {
+            const detailsRes = await fetch(`https://games.roblox.com/v1/games/multiget-place-details?placeIds=${entry.placeId}`);
+            if (detailsRes.ok) {
+              const detailsData = await detailsRes.json();
+              if (Array.isArray(detailsData) && detailsData[0]) {
+                const game = detailsData[0];
+                if (game.name && !entry.title) { entry.title = game.name; updated = true; }
+                if (game.builder && game.builder.name && !entry.author) { entry.author = game.builder.name; updated = true; }
+                if (game.universeId && (typeof entry.likes !== 'number' || entry.likes === 0)) {
+                  // Fetch like percent
+                  try {
+                    const votesRes = await fetch(`https://games.roblox.com/v1/games/${game.universeId}/votes`);
+                    if (votesRes.ok) {
+                      const votesData = await votesRes.json();
+                      if (typeof votesData.upVotes === 'number' && typeof votesData.downVotes === 'number') {
+                        const totalVotes = votesData.upVotes + votesData.downVotes;
+                        entry.likes = totalVotes > 0 ? Math.round((votesData.upVotes / totalVotes) * 100) : 0;
+                        updated = true;
+                      }
+                    }
+                  } catch {}
+                }
+              }
+            }
+          } catch {}
+          // Fetch thumbnail
+          try {
+            const thumbRes = await fetch(`https://thumbnails.roblox.com/v1/places/${entry.placeId}/icons?format=Png&isCircular=false&size=150x150`);
+            if (thumbRes.ok) {
+              const thumbData = await thumbRes.json();
+              if (thumbData.data && thumbData.data[0] && thumbData.data[0].imageUrl) {
+                entry.thumbUrl = thumbData.data[0].imageUrl;
+                updated = true;
+              }
+            }
+          } catch {}
+          if (updated) await entry.save();
+        }
+        return entry;
+      }));
+      return res.json(listingsWithMeta);
     } catch (e) {
       return res.status(500).json({ error: e.message });
     }

@@ -86,12 +86,6 @@
   max-height: 48px;
 }
 
-#total-form-entry > td {
-  border-top: 2px solid #f4ce6e !important;
-}
-
-
-
 #placeInput {
   padding: 12px;
   background: white;
@@ -346,19 +340,12 @@ function renderListings(listings) {
       // Author
       placeholder.cells[1].textContent = first.author || 'Unknown';
       // Game Name (already handled elsewhere)
-      // Likes
-      let likeRatio = '';
-      if (typeof first.likes === 'number' && typeof first.impressions === 'number') {
-        likeRatio = first.impressions > 0 ? ((first.likes / first.impressions) * 100).toFixed(1) + '%' : (first.likes ? '100%' : '0%');
-      } else if (typeof first.likes === 'number') {
-        likeRatio = first.likes.toString();
-      } else {
-        likeRatio = first.likeRatio || '';
-      }
-      placeholder.cells[3].textContent = likeRatio;
-      placeholder.cells[3].title = `Like Ratio: ${likeRatio}`;
+      // Likes (from MongoDB field)
+      placeholder.cells[3].textContent = typeof first.likes === 'number' ? first.likes : '';
+      placeholder.cells[3].title = `Likes: ${first.likes}`;
     }
-    // The rest (impressions, clicks, CTR) are already set below
+    // Remove the placeholder row after filling it, so it doesn't duplicate or show empty
+    table.deleteRow(1);
   }
   // Now render all listings as before
   listings.forEach((entry, idx) => {
@@ -367,22 +354,11 @@ function renderListings(listings) {
     newRow.cells[0].innerHTML = entry.thumbUrl ? `<img src="${entry.thumbUrl}" class="thumbnail" style="max-height:48px;vertical-align:middle;">` : '';
     newRow.cells[1].textContent = entry.author || 'Unknown';
     newRow.cells[2].textContent = entry.title || '';
-
-    // --- Calculate Like Ratio and CTR dynamically ---
-    let likeRatio = '';
-    if (typeof entry.likes === 'number' && typeof entry.impressions === 'number') {
-      likeRatio = entry.impressions > 0 ? ((entry.likes / entry.impressions) * 100).toFixed(1) + '%' : (entry.likes ? '100%' : '0%');
-    } else if (typeof entry.likes === 'number') {
-      likeRatio = entry.likes.toString();
-    } else {
-      likeRatio = entry.likeRatio || '';
-    }
-    newRow.cells[3].textContent = likeRatio;
-    newRow.cells[3].title = `Like Ratio: ${likeRatio}`;
-
+    // Likes (from MongoDB field)
+    newRow.cells[3].textContent = typeof entry.likes === 'number' ? entry.likes : '';
+    newRow.cells[3].title = `Likes: ${entry.likes}`;
     newRow.cells[4].textContent = entry.impressions || 0;
     newRow.cells[5].textContent = entry.clicks || 0;
-
     // --- Calculate CTR dynamically ---
     let ctr = '';
     if (typeof entry.impressions === 'number' && entry.impressions > 0 && typeof entry.clicks === 'number') {
@@ -391,7 +367,6 @@ function renderListings(listings) {
       ctr = '0%';
     }
     newRow.cells[6].textContent = ctr;
-
     newRow.cells[7].innerHTML = `
       <button class="manage-btn manage-edit" title="Edit" style="background:#f4ce6e;color:#53216e;border:none;border-radius:4px;padding:4px 10px;margin-right:6px;cursor:pointer;font-weight:bold;"><i class="fa-solid fa-pencil"></i></button>
       <button class="manage-btn manage-delete" title="Delete" style="background:#53216e;color:#fff;border:none;border-radius:4px;padding:4px 10px;cursor:pointer;font-weight:bold;"><i class="fa-solid fa-x"></i></button>

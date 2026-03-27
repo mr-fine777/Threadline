@@ -498,7 +498,7 @@ function renderListings(listings) {
       deleteBtn.addEventListener('click', function() {
         if (!confirm('Are you sure you want to delete this entry?')) return;
         // Delete entry from MongoDB (requires backend DELETE endpoint)
-        fetch(`http://localhost:3005/api/listings?code=${encodeURIComponent(threadlineAccessCode)}&placeId=${encodeURIComponent(entry.placeId)}`, {
+        fetch(`https://rbxthread.app/api/listings?code=${encodeURIComponent(threadlineAccessCode)}&placeId=${encodeURIComponent(entry.placeId)}`, {
           method: 'DELETE',
         })
         .then(res => res.json())
@@ -515,7 +515,7 @@ function renderListings(listings) {
 
 function fetchListingsForCode(code) {
   // Fetch all listings for this code from the API
-  fetch(`http://localhost:3005/api/listings?code=${encodeURIComponent(code)}`)
+  fetch(`https://rbxthread.app/api/listings?code=${encodeURIComponent(code)}`)
     .then(res => res.ok ? res.json() : [])
     .then(data => {
       // Data should be an array of listings for this code
@@ -548,7 +548,7 @@ function fetchPlaceInfo() {
     return;
   }
   // Check if already 5 listings for this code, and if placeId is duplicate
-  fetch(`http://localhost:3005/api/listings?code=${encodeURIComponent(threadlineAccessCode)}`)
+  fetch(`https://rbxthread.app/api/listings?code=${encodeURIComponent(threadlineAccessCode)}`)
     .then(res => res.ok ? res.json() : [])
     .then(listings => {
       if (Array.isArray(listings)) {
@@ -562,7 +562,7 @@ function fetchPlaceInfo() {
         }
       }
       // Check if placeId exists for any code (global uniqueness)
-      fetch(`http://localhost:3005/api/listings?placeId=${encodeURIComponent(placeId)}`)
+      fetch(`https://rbxthread.app/api/listings?placeId=${encodeURIComponent(placeId)}`)
         .then(res2 => res2.ok ? res2.json() : [])
         .then(globalEntries => {
           if (Array.isArray(globalEntries) && globalEntries.length > 0) {
@@ -601,7 +601,7 @@ function fetchPlaceInfo() {
                   }
 
                   // Upload to MongoDB via Express API, include code and all required fields
-                  fetch('http://localhost:3005/api/listings', {
+                  fetch('https://rbxthread.app/api/listings', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

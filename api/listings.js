@@ -99,8 +99,8 @@ async function handler(req, res) {
     const { placeId, title, code, impressions, clicks } = req.body;
     if (!placeId) return res.status(400).json({ error: 'placeId required' });
     if (!code) return res.status(400).json({ error: 'code required' });
-    // Validate placeId format (6-12 digits)
-    if (!/^\d{6,12}$/.test(placeId)) {
+    // Validate placeId format (6+ digits, no upper limit)
+    if (!/^\d{6,}$/.test(placeId)) {
       return res.status(400).json({ error: 'Invalid placeId format.' });
     }
     try {

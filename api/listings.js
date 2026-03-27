@@ -81,6 +81,10 @@ async function handler(req, res) {
     const { placeId, title, code, impressions, clicks } = req.body;
     if (!placeId) return res.status(400).json({ error: 'placeId required' });
     if (!code) return res.status(400).json({ error: 'code required' });
+    // Validate placeId format (6-12 digits)
+    if (!/^\d{6,12}$/.test(placeId)) {
+      return res.status(400).json({ error: 'Invalid placeId format.' });
+    }
     try {
       // Fetch Roblox game details using multiget endpoint
       let gameTitle = title || '';
@@ -88,18 +92,24 @@ async function handler(req, res) {
       let thumbUrl = '';
       let likePercent = 0;
       let universeId = null;
+      let validGame = false;
       try {
         const detailsRes = await fetch(`https://games.roblox.com/v1/games/multiget-place-details?placeIds=${placeId}`);
         if (detailsRes.ok) {
           const detailsData = await detailsRes.json();
-          if (Array.isArray(detailsData) && detailsData[0]) {
+          if (Array.isArray(detailsData) && detailsData[0] && detailsData[0].name) {
             const game = detailsData[0];
             gameTitle = game.name || gameTitle;
             author = (game.builder && game.builder.name) ? game.builder.name : '';
             universeId = game.universeId;
+            validGame = true;
           }
         }
       } catch {}
+      // If no valid game, return error
+      if (!validGame) {
+        return res.status(400).json({ error: 'Invalid or private placeId, or Roblox API returned no data.' });
+      }
       // Fetch thumbnail
       try {
         const thumbRes = await fetch(`https://thumbnails.roblox.com/v1/places/${placeId}/icons?format=Png&isCircular=false&size=150x150`);
@@ -123,11 +133,15 @@ async function handler(req, res) {
           }
         } catch {}
       }
+      // Only save if we have at least title, author, and thumbUrl
+      if (!gameTitle || !author || !thumbUrl) {
+        return res.status(400).json({ error: 'Could not fetch all required Roblox data (title, author, thumbnail).' });
+      }
       let listing = await Listing.findOne({ placeId, code });
       if (listing) {
-        if (gameTitle) listing.title = gameTitle;
-        if (author) listing.author = author;
-        if (thumbUrl) listing.thumbUrl = thumbUrl;
+        listing.title = gameTitle;
+        listing.author = author;
+        listing.thumbUrl = thumbUrl;
         listing.likes = likePercent;
         if (code) listing.code = code;
         if (typeof impressions === 'number') listing.impressions = impressions;
@@ -149,31 +163,7 @@ async function handler(req, res) {
       }
       return res.json(listing);
     } catch (e) {
-      // If Roblox API fails, still allow entry with minimal info
-      try {
-        let listing = await Listing.findOne({ placeId, code });
-        if (listing) {
-          if (title) listing.title = title;
-          if (code) listing.code = code;
-          if (typeof impressions === 'number') listing.impressions = impressions;
-          if (typeof clicks === 'number') listing.clicks = clicks;
-          await listing.save();
-        } else {
-          const count = await Listing.countDocuments({ code });
-          if (count >= 5) return res.status(400).json({ error: 'You can only have 5 sponsored listings per code.' });
-          listing = await Listing.create({
-            placeId,
-            title: title || '',
-            likes: 0,
-            code,
-            impressions: typeof impressions === 'number' ? impressions : 0,
-            clicks: typeof clicks === 'number' ? clicks : 0
-          });
-        }
-        return res.json(listing);
-      } catch (err2) {
-        return res.status(500).json({ error: err2.message });
-      }
+      return res.status(500).json({ error: e.message });
     }
   }
 

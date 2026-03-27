@@ -110,16 +110,22 @@ async function handler(req, res) {
       if (!validGame) {
         return res.status(400).json({ error: 'Invalid or private placeId, or Roblox API returned no data.' });
       }
-      // Fetch thumbnail
+      // Fetch thumbnail (use place THUMBNAIL endpoint, not icon)
       try {
-        const thumbRes = await fetch(`https://thumbnails.roblox.com/v1/places/${placeId}/icons?format=Png&isCircular=false&size=150x150`);
+        const thumbRes = await fetch(`https://thumbnails.roblox.com/v1/places/${placeId}/thumbnails?format=Png&size=768x432`);
         if (thumbRes.ok) {
           const thumbData = await thumbRes.json();
+          // Debug log
+          console.log('Roblox thumbnail API response:', JSON.stringify(thumbData));
           if (thumbData.data && thumbData.data[0] && thumbData.data[0].imageUrl) {
             thumbUrl = thumbData.data[0].imageUrl;
           }
+        } else {
+          console.log('Roblox thumbnail API failed:', thumbRes.status);
         }
-      } catch {}
+      } catch (err) {
+        console.log('Roblox thumbnail API error:', err);
+      }
       // Fetch like percent
       if (universeId) {
         try {

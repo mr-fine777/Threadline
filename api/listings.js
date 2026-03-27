@@ -1,3 +1,9 @@
+
+// Polyfill fetch for Node.js if not available
+if (typeof fetch === 'undefined') {
+  global.fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+}
+
 // Vercel Serverless API for Threadline sponsored listings
 // Place this file as /api/listings.js
 

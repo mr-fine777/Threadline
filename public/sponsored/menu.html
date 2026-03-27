@@ -340,8 +340,8 @@ function renderListings(listings) {
       // Author
       placeholder.cells[1].textContent = first.author || 'Unknown';
       // Game Name (already handled elsewhere)
-      // Likes (from MongoDB field)
-      placeholder.cells[3].textContent = typeof first.likes === 'number' ? first.likes : '';
+      // Likes (from MongoDB field, always number)
+      placeholder.cells[3].textContent = (typeof first.likes === 'number' && !isNaN(first.likes)) ? first.likes : '';
       placeholder.cells[3].title = `Likes: ${first.likes}`;
     }
     // Remove the placeholder row after filling it, so it doesn't duplicate or show empty
@@ -354,8 +354,8 @@ function renderListings(listings) {
     newRow.cells[0].innerHTML = entry.thumbUrl ? `<img src="${entry.thumbUrl}" class="thumbnail" style="max-height:48px;vertical-align:middle;">` : '';
     newRow.cells[1].textContent = entry.author || 'Unknown';
     newRow.cells[2].textContent = entry.title || '';
-    // Likes (from MongoDB field)
-    newRow.cells[3].textContent = typeof entry.likes === 'number' ? entry.likes : '';
+    // Likes (from MongoDB field, always number)
+    newRow.cells[3].textContent = (typeof entry.likes === 'number' && !isNaN(entry.likes)) ? entry.likes : '';
     newRow.cells[3].title = `Likes: ${entry.likes}`;
     newRow.cells[4].textContent = entry.impressions || 0;
     newRow.cells[5].textContent = entry.clicks || 0;

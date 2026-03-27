@@ -33,9 +33,9 @@ const Listing = mongoose.models.Listing || mongoose.model('Listing', ListingSche
 
 async function handler(req, res) {
   await connectToDatabase();
+  const method = req.method;
   // DEBUG: Log incoming request method and url
   console.log('[API] listings.js', method, req.url, req.body || req.query);
-  const method = req.method;
   // Robust JSON body parsing for Vercel/Node.js
   if (method === 'POST' && !req.body) {
     try {

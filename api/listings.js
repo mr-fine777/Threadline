@@ -33,6 +33,8 @@ const Listing = mongoose.models.Listing || mongoose.model('Listing', ListingSche
 
 async function handler(req, res) {
   await connectToDatabase();
+  // DEBUG: Log incoming request method and url
+  console.log('[API] listings.js', method, req.url, req.body || req.query);
   const method = req.method;
   // Robust JSON body parsing for Vercel/Node.js
   if (method === 'POST' && !req.body) {
@@ -83,6 +85,7 @@ async function handler(req, res) {
   // POST /api/listings
   if (method === 'POST') {
     const { placeId, code, impressions, clicks } = req.body;
+    console.log('[API][POST] Incoming body:', req.body);
     if (!placeId) return res.status(400).json({ error: 'placeId required' });
     if (!code) return res.status(400).json({ error: 'code required' });
     try {
@@ -130,6 +133,7 @@ async function handler(req, res) {
       }
       // Only allow unique placeId per code, not globally
       let listing = await Listing.findOne({ placeId, code });
+      console.log('[API][POST] Fetched listing:', listing);
       if (listing) {
         if (gameTitle) listing.title = gameTitle;
         listing.likes = likePercent;
@@ -153,6 +157,7 @@ async function handler(req, res) {
           thumbUrl
         });
       }
+      console.log('[API][POST] Saved/created listing:', listing);
       return res.json(listing);
     } catch (e) {
       return res.status(500).json({ error: e.message });
@@ -166,9 +171,12 @@ async function handler(req, res) {
       let query = {};
       if (code) query.code = code;
       if (placeId) query.placeId = placeId;
+      console.log('[API][GET] Query:', query);
       const listings = await Listing.find(query);
+      console.log('[API][GET] Results:', listings);
       return res.json(listings);
     } catch (e) {
+      console.error('[API][GET] Error:', e);
       return res.status(500).json({ error: e.message });
     }
   }

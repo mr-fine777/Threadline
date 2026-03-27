@@ -27,6 +27,8 @@ const ListingSchema = new mongoose.Schema({
   title: { type: String, default: '' },
   likes: { type: Number, default: 0 },
   code: { type: String, required: true },
+  author: { type: String, default: '' },
+  thumbUrl: { type: String, default: '' },
 }, { collection: 'rbxthread' });
 
 const Listing = mongoose.models.Listing || mongoose.model('Listing', ListingSchema, 'rbxthread');

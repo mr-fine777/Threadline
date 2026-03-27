@@ -492,7 +492,7 @@ function fetchListingsForCode(code) {
         thumbUrl: entry.thumbUrl || '',
         author: entry.author || '',
         title: entry.title || '',
-        likeRatio: entry.likeRatio || '',
+        likes: entry.likes, // <-- FIX: pass likes from MongoDB
         impressions: entry.impressions || 0,
         clicks: entry.clicks || 0,
         ctr: entry.ctr || '',

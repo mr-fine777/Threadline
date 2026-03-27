@@ -341,69 +341,12 @@ function renderListings(listings) {
   listings.forEach((entry, idx) => {
     const newRow = table.insertRow(-1);
     for (let i = 0; i < 8; i++) newRow.insertCell();
-    // If thumbUrl or author is missing, fetch from Roblox APIs
-    if (!entry.thumbUrl || !entry.author) {
-      fetch(`https://corsproxy.io/?https://apis.roblox.com/universes/v1/places/${entry.placeId}/universe`)
-        .then(universeRes => universeRes.ok ? universeRes.json() : null)
-        .then(universeData => {
-          if (!universeData) return;
-          const universeId = universeData.universeId;
-          // Fetch votes (likes/dislikes) from the documented endpoint
-          fetch(`https://corsproxy.io/?https://games.roblox.com/v1/games/${universeId}/votes`)
-            .then(votesRes => votesRes.ok ? votesRes.json() : null)
-            .then(votesData => {
-              let likes = null;
-              let downVotes = null;
-              if (votesData && typeof votesData.upVotes === 'number' && typeof votesData.downVotes === 'number') {
-                likes = votesData.upVotes;
-                downVotes = votesData.downVotes;
-                console.log('Votes endpoint:', likes, downVotes);
-              } else {
-                console.log('Votes endpoint did not return valid data for universeId', universeId, votesData);
-              }
-              // Calculate like ratio
-              let likeRatio = '';
-              if (likes !== null && downVotes !== null) {
-                const total = likes + downVotes;
-                likeRatio = total > 0 ? ((likes / total) * 100).toFixed(1) + '%' : 'N/A';
-              } else if (likes !== null) {
-                likeRatio = likes.toString();
-              } else {
-                likeRatio = entry.likeRatio || '';
-                console.log('Could not fetch likes from votes endpoint for placeId', entry.placeId);
-              }
-              // Set likes and likeRatio in the row
-              newRow.cells[3].textContent = likeRatio;
-              newRow.cells[3].title = `Like Ratio: ${likeRatio}`;
-              // Fetch author (creator name) from games details endpoint
-              fetch(`https://corsproxy.io/?https://games.roblox.com/v1/games?universeIds=${universeId}`)
-                .then(detailsRes => detailsRes.ok ? detailsRes.json() : null)
-                .then(detailsData => {
-                  let author = 'Unknown';
-                  if (detailsData && detailsData.data && detailsData.data[0] && detailsData.data[0].creator && detailsData.data[0].creator.name) {
-                    author = detailsData.data[0].creator.name;
-                  }
-                  // Continue with thumbnail
-                  fetch(`https://corsproxy.io/?https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeId}&size=768x432&format=Png&isCircular=false`)
-                    .then(thumbRes => thumbRes.ok ? thumbRes.json() : null)
-                    .then(thumbData => {
-                      const thumbUrl = thumbData && thumbData.data && thumbData.data[0]?.thumbnails[0]?.imageUrl || '';
-                      newRow.cells[0].innerHTML = thumbUrl ? `<img src="${thumbUrl}" class="thumbnail" style="max-height:48px;vertical-align:middle;">` : '';
-                      newRow.cells[1].textContent = author;
-                    });
-                });
-            });
-        });
-    } else {
-      newRow.cells[0].innerHTML = entry.thumbUrl ? `<img src="${entry.thumbUrl}" class="thumbnail" style="max-height:48px;vertical-align:middle;">` : '';
-      newRow.cells[1].textContent = entry.author || 'Unknown';
-    }
+    newRow.cells[0].innerHTML = entry.thumbUrl ? `<img src="${entry.thumbUrl}" class="thumbnail" style="max-height:48px;vertical-align:middle;">` : '';
+    newRow.cells[1].textContent = entry.author || 'Unknown';
     newRow.cells[2].textContent = entry.title || '';
-
     // --- Calculate Like Ratio and CTR dynamically ---
     let likeRatio = '';
     if (typeof entry.likes === 'number' && typeof entry.impressions === 'number') {
-      // If you want like ratio as likes/impressions
       likeRatio = entry.impressions > 0 ? ((entry.likes / entry.impressions) * 100).toFixed(1) + '%' : (entry.likes ? '100%' : '0%');
     } else if (typeof entry.likes === 'number') {
       likeRatio = entry.likes.toString();
@@ -412,10 +355,8 @@ function renderListings(listings) {
     }
     newRow.cells[3].textContent = likeRatio;
     newRow.cells[3].title = `Like Ratio: ${likeRatio}`;
-
     newRow.cells[4].textContent = entry.impressions || 0;
     newRow.cells[5].textContent = entry.clicks || 0;
-
     // --- Calculate CTR dynamically ---
     let ctr = '';
     if (typeof entry.impressions === 'number' && entry.impressions > 0 && typeof entry.clicks === 'number') {
@@ -424,18 +365,15 @@ function renderListings(listings) {
       ctr = '0%';
     }
     newRow.cells[6].textContent = ctr;
-
     newRow.cells[7].innerHTML = `
       <button class="manage-btn manage-edit" title="Edit" style="background:#f4ce6e;color:#53216e;border:none;border-radius:4px;padding:4px 10px;margin-right:6px;cursor:pointer;font-weight:bold;"><i class="fa-solid fa-pencil"></i></button>
       <button class="manage-btn manage-delete" title="Delete" style="background:#53216e;color:#fff;border:none;border-radius:4px;padding:4px 10px;cursor:pointer;font-weight:bold;"><i class="fa-solid fa-x"></i></button>
       <div class="edit-box" style="display:none;margin-top:8px;"></div>
     `;
-
     // Add event listeners for edit and delete
     const editBtn = newRow.cells[7].querySelector('.manage-edit');
     const deleteBtn = newRow.cells[7].querySelector('.manage-delete');
     const editBox = newRow.cells[7].querySelector('.edit-box');
-
     if (editBtn) {
       editBtn.addEventListener('click', function() {
         // Toggle edit box
@@ -458,60 +396,37 @@ function renderListings(listings) {
               errorDiv.textContent = 'Invalid place ID.';
               return;
             }
-            // Fetch new title from Roblox API
-            fetch(`https://corsproxy.io/?https://apis.roblox.com/universes/v1/places/${newPlaceId}/universe`)
-              .then(universeRes => {
-                if (!universeRes.ok) throw new Error('Universe ID not found.');
-                return universeRes.json();
+            // Delete the original entry first
+            fetch(`/api/listings?code=${encodeURIComponent(threadlineAccessCode)}&placeId=${encodeURIComponent(entry.placeId)}`, {
+              method: 'DELETE',
+            })
+            .then(() => {
+              // Add the new entry (backend will fetch all info)
+              fetch('/api/listings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  placeId: newPlaceId,
+                  code: threadlineAccessCode,
+                  impressions: entry.impressions,
+                  clicks: entry.clicks
+                })
               })
-              .then(universeData => {
-                const universeId = universeData.universeId;
-                return fetch(`https://corsproxy.io/?https://games.roblox.com/v1/games?universeIds=${universeId}`)
-                  .then(detailsRes => {
-                    if (!detailsRes.ok) throw new Error('Game details not found.');
-                    return detailsRes.json();
-                  })
-                  .then(detailsData => {
-                    const game = detailsData.data && detailsData.data[0] ? detailsData.data[0] : {};
-                    const newTitle = game.name || '';
-                    // Delete the original entry first
-                    fetch(`/api/listings?code=${encodeURIComponent(threadlineAccessCode)}&placeId=${encodeURIComponent(entry.placeId)}`, {
-                      method: 'DELETE',
-                    })
-                    .then(() => {
-                      // Add the new entry with the new title
-                      fetch('/api/listings', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                          placeId: newPlaceId,
-                          title: newTitle,
-                          likes: entry.likes,
-                          code: threadlineAccessCode,
-                          impressions: entry.impressions,
-                          clicks: entry.clicks
-                        })
-                      })
-                      .then(res => res.json())
-                      .then(data => {
-                        if (data.error) {
-                          errorDiv.textContent = data.error;
-                        } else {
-                          fetchListingsForCode(threadlineAccessCode);
-                        }
-                      })
-                      .catch(() => {
-                        errorDiv.textContent = 'Failed to update entry.';
-                      });
-                    })
-                    .catch(() => {
-                      errorDiv.textContent = 'Failed to delete original entry.';
-                    });
-                  });
+              .then(res => res.json())
+              .then(data => {
+                if (data.error) {
+                  errorDiv.textContent = data.error;
+                } else {
+                  fetchListingsForCode(threadlineAccessCode);
+                }
               })
-              .catch(e => {
-                errorDiv.textContent = e.message || 'Failed to fetch new game title.';
+              .catch(() => {
+                errorDiv.textContent = 'Failed to update entry.';
               });
+            })
+            .catch(() => {
+              errorDiv.textContent = 'Failed to delete original entry.';
+            });
           });
           cancelBtn.addEventListener('click', function() {
             editBox.style.display = 'none';
@@ -524,7 +439,6 @@ function renderListings(listings) {
     if (deleteBtn) {
       deleteBtn.addEventListener('click', function() {
         if (!confirm('Are you sure you want to delete this entry?')) return;
-        // Delete entry from MongoDB (requires backend DELETE endpoint)
         fetch(`/api/listings?code=${encodeURIComponent(threadlineAccessCode)}&placeId=${encodeURIComponent(entry.placeId)}`, {
           method: 'DELETE',
         })
@@ -596,64 +510,29 @@ function fetchPlaceInfo() {
             document.getElementById('error').textContent = 'This place is already sponsored.';
             return;
           }
-          // Continue with Roblox API fetch
-          fetch(`https://corsproxy.io/?https://apis.roblox.com/universes/v1/places/${placeId}/universe`)
-            .then(universeRes => {
-              if (!universeRes.ok) throw new Error('Universe ID not found.');
-              return universeRes.json();
+          // Add to MongoDB via backend API, backend will fetch all Roblox info
+          fetch('/api/listings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              placeId: placeId,
+              code: threadlineAccessCode,
+              impressions: 0,
+              clicks: 0
             })
-            .then(universeData => {
-              const universeId = universeData.universeId;
-              return fetch(`https://corsproxy.io/?https://games.roblox.com/v1/games?universeIds=${universeId}`)
-                .then(detailsRes => {
-                  if (!detailsRes.ok) throw new Error('Game details not found.');
-                  return detailsRes.json().then(detailsData => ({ detailsData, universeId }));
-                });
-            })
-            .then(({ detailsData, universeId }) => {
-              const game = detailsData.data[0];
-              let thumbUrl = '';
-              fetch(`https://corsproxy.io/?https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeId}&size=768x432&format=Png&isCircular=false`)
-                .then(thumbRes => thumbRes.ok ? thumbRes.json() : null)
-                .then(thumbData => {
-                  if (thumbData) {
-                    thumbUrl = thumbData.data[0]?.thumbnails[0]?.imageUrl || '';
-                  }
-                  let likeRatio = 'N/A';
-                  let likes = 0;
-                  if (game && typeof game.upVotes === 'number' && typeof game.downVotes === 'number') {
-                    const total = game.upVotes + game.downVotes;
-                    likeRatio = total > 0 ? ((game.upVotes / total) * 100).toFixed(1) + '%' : 'N/A';
-                    likes = game.upVotes;
-                  }
-
-                  // Upload to MongoDB via Express API, include code and all required fields
-                  fetch('/api/listings', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      placeId: placeId,
-                      title: game.name || '',
-                      likes: likes,
-                      code: threadlineAccessCode,
-                      impressions: 0,
-                      clicks: 0
-                    })
-                  })
-                  .then(apiRes => apiRes.json())
-                  .then(apiData => {
-                    document.getElementById('result').innerHTML = 'Listing added!';
-                    // Refresh listings for this code
-                    fetchListingsForCode(threadlineAccessCode);
-                  })
-                  .catch(apiErr => {
-                    document.getElementById('error').textContent = 'Failed to add to database: ' + apiErr.message;
-                  });
-                });
-            })
-            .catch(e => {
-              document.getElementById('error').textContent = e.message;
-            });
+          })
+          .then(apiRes => apiRes.json())
+          .then(apiData => {
+            if (apiData.error) {
+              document.getElementById('error').textContent = apiData.error;
+            } else {
+              document.getElementById('result').innerHTML = 'Listing added!';
+              fetchListingsForCode(threadlineAccessCode);
+            }
+          })
+          .catch(apiErr => {
+            document.getElementById('error').textContent = 'Failed to add to database: ' + apiErr.message;
+          });
         });
     });
 }

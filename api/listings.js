@@ -41,9 +41,25 @@ const ListingSchema = new mongoose.Schema({
 const Listing = mongoose.models.Listing || mongoose.model('Listing', ListingSchema, 'rbxthread');
 
 async function handler(req, res) {
+
   await connectToDatabase();
   const method = req.method;
   const { placeId } = req.query;
+
+  // Robust JSON body parsing for Vercel/Node.js
+  if (method === 'POST' && !req.body) {
+    try {
+      const rawBody = await new Promise((resolve, reject) => {
+        let data = '';
+        req.on('data', chunk => data += chunk);
+        req.on('end', () => resolve(data));
+        req.on('error', reject);
+      });
+      req.body = rawBody ? JSON.parse(rawBody) : {};
+    } catch (e) {
+      return res.status(400).json({ error: 'Invalid JSON body' });
+    }
+  }
 
   if (req.url.endsWith('/random') && method === 'GET') {
     // Get a random listing
@@ -77,6 +93,8 @@ async function handler(req, res) {
   }
 
   if (method === 'POST') {
+    // Debug log for POST body
+    console.log('POST body:', req.body);
     // Add a new listing or update title/author/thumb/likes if exists
     const { placeId, title, code, impressions, clicks } = req.body;
     if (!placeId) return res.status(400).json({ error: 'placeId required' });

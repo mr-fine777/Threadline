@@ -341,36 +341,8 @@ function renderListings(listings) {
   listings.forEach((entry, idx) => {
     const newRow = table.insertRow(-1);
     for (let i = 0; i < 8; i++) newRow.insertCell();
-    // Always try to show thumbnail and author, fallback to Roblox APIs if missing
-    if (entry.thumbUrl && entry.author) {
-      newRow.cells[0].innerHTML = `<img src="${entry.thumbUrl}" class="thumbnail" style="max-height:48px;vertical-align:middle;">`;
-      newRow.cells[1].textContent = entry.author;
-    } else {
-      // Fallback: fetch both thumbnail and author from Roblox APIs
-      fetch(`https://corsproxy.io/?https://apis.roblox.com/universes/v1/places/${entry.placeId}/universe`)
-        .then(universeRes => universeRes.ok ? universeRes.json() : null)
-        .then(universeData => {
-          if (!universeData) return;
-          const universeId = universeData.universeId;
-          // Fetch author from games API
-          fetch(`https://corsproxy.io/?https://games.roblox.com/v1/games?universeIds=${universeId}`)
-            .then(detailsRes => detailsRes.ok ? detailsRes.json() : null)
-            .then(detailsData => {
-              let author = 'Unknown';
-              if (detailsData && detailsData.data && detailsData.data[0] && detailsData.data[0].creator && detailsData.data[0].creator.name) {
-                author = detailsData.data[0].creator.name;
-              }
-              // Fetch thumbnail (not icon)
-              fetch(`https://corsproxy.io/?https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeId}&size=768x432&format=Png&isCircular=false`)
-                .then(thumbRes => thumbRes.ok ? thumbRes.json() : null)
-                .then(thumbData => {
-                  const thumbUrl = thumbData && thumbData.data && thumbData.data[0]?.thumbnails[0]?.imageUrl || '';
-                  newRow.cells[0].innerHTML = thumbUrl ? `<img src="${thumbUrl}" class="thumbnail" style="max-height:48px;vertical-align:middle;">` : '';
-                  newRow.cells[1].textContent = author;
-                });
-            });
-        });
-    }
+    newRow.cells[0].innerHTML = entry.thumbUrl ? `<img src="${entry.thumbUrl}" class="thumbnail" style="max-height:48px;vertical-align:middle;">` : '';
+    newRow.cells[1].textContent = entry.author || 'Unknown';
     newRow.cells[2].textContent = entry.title || '';
 
     // --- Calculate Like Ratio and CTR dynamically ---
@@ -569,66 +541,29 @@ function fetchPlaceInfo() {
             document.getElementById('error').textContent = 'This place is already sponsored.';
             return;
           }
-          // Continue with Roblox API fetch
-          fetch(`https://corsproxy.io/?https://apis.roblox.com/universes/v1/places/${placeId}/universe`)
-            .then(universeRes => {
-              if (!universeRes.ok) throw new Error('Universe ID not found.');
-              return universeRes.json();
+          // Add to DB via backend only
+          fetch('https://www.rbxthread.app/api/listings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              placeId: placeId,
+              code: threadlineAccessCode,
+              impressions: 0,
+              clicks: 0
             })
-            .then(universeData => {
-              const universeId = universeData.universeId;
-              return fetch(`https://corsproxy.io/?https://games.roblox.com/v1/games?universeIds=${universeId}`)
-                .then(detailsRes => {
-                  if (!detailsRes.ok) throw new Error('Game details not found.');
-                  return detailsRes.json().then(detailsData => ({ detailsData, universeId }));
-                });
-            })
-            .then(({ detailsData, universeId }) => {
-              const game = detailsData.data[0];
-              let thumbUrl = '';
-              fetch(`https://corsproxy.io/?https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeId}&size=768x432&format=Png&isCircular=false`)
-                .then(thumbRes => thumbRes.ok ? thumbRes.json() : null)
-                .then(thumbData => {
-                  if (thumbData) {
-                    thumbUrl = thumbData.data[0]?.thumbnails[0]?.imageUrl || '';
-                  }
-                  let likeRatio = 'N/A';
-                  let likes = 0;
-                  if (game && typeof game.upVotes === 'number' && typeof game.downVotes === 'number') {
-                    const total = game.upVotes + game.downVotes;
-                    likeRatio = total > 0 ? ((game.upVotes / total) * 100).toFixed(1) + '%' : 'N/A';
-                    likes = game.upVotes;
-                  }
-
-                  // Upload to MongoDB via Express API, include code and all required fields
-                  fetch('https://www.rbxthread.app/api/listings', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      placeId: placeId,
-                      title: game.name || '',
-                      likes: likes,
-                      code: threadlineAccessCode,
-                      impressions: 0,
-                      clicks: 0,
-                      author: game.creator && game.creator.name ? game.creator.name : '',
-                      thumbUrl: thumbUrl
-                    })
-                  })
-                  .then(apiRes => apiRes.json())
-                  .then(apiData => {
-                    document.getElementById('result').innerHTML = 'Listing added!';
-                    // Refresh listings for this code
-                    fetchListingsForCode(threadlineAccessCode);
-                  })
-                  .catch(apiErr => {
-                    document.getElementById('error').textContent = 'Failed to add to database: ' + apiErr.message;
-                  });
-                });
-            })
-            .catch(e => {
-              document.getElementById('error').textContent = e.message;
-            });
+          })
+          .then(apiRes => apiRes.json())
+          .then(apiData => {
+            if (apiData.error) {
+              document.getElementById('error').textContent = apiData.error;
+            } else {
+              document.getElementById('result').innerHTML = 'Listing added!';
+              fetchListingsForCode(threadlineAccessCode);
+            }
+          })
+          .catch(apiErr => {
+            document.getElementById('error').textContent = 'Failed to add to database: ' + apiErr.message;
+          });
         });
     });
 }

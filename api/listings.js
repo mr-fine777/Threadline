@@ -7,7 +7,7 @@ if (typeof fetch === 'undefined') {
 
 const mongoose = require('mongoose');
 
-const mongoUri = process.env.MONGO_URI || 'mongodb+srv://edmundbrady777_db_user:6GKQTa8IuQk4nUhu@threadline.jiqs2of.mongodb.net/Threadline?retryWrites=true&w=majority&appName=Threadline';
+const mongoUri = process.env.MONGO_URI;
 
 let conn = null;
 async function connectToDatabase() {
@@ -82,12 +82,14 @@ async function handler(req, res) {
 
   // POST /api/listings
   if (method === 'POST') {
-    const { placeId, title, code, impressions, clicks } = req.body;
+    const { placeId, code, impressions, clicks } = req.body;
     if (!placeId) return res.status(400).json({ error: 'placeId required' });
     if (!code) return res.status(400).json({ error: 'code required' });
     try {
       let likePercent = 0;
-      let gameTitle = title || '';
+      let gameTitle = '';
+      let author = '';
+      let thumbUrl = '';
       let universeId = null;
       // 1. Get universeId from placeId
       try {
@@ -97,7 +99,7 @@ async function handler(req, res) {
           universeId = universeData.universeId;
         }
       } catch (e) {}
-      // 2. Get upVotes from votes API and game title from games API
+      // 2. Get upVotes, game title, author, and thumbnail
       if (universeId) {
         try {
           const votesRes = await fetch(`https://games.roblox.com/v1/games/${universeId}/votes`);
@@ -115,6 +117,14 @@ async function handler(req, res) {
             const detailsData = await detailsRes.json();
             const game = detailsData.data && detailsData.data[0] ? detailsData.data[0] : {};
             if (game.name) gameTitle = game.name;
+            if (game.creator && game.creator.name) author = game.creator.name;
+          }
+        } catch (e) {}
+        try {
+          const thumbRes = await fetch(`https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeId}&size=768x432&format=Png&isCircular=false`);
+          if (thumbRes.ok) {
+            const thumbData = await thumbRes.json();
+            thumbUrl = thumbData && thumbData.data && thumbData.data[0]?.thumbnails[0]?.imageUrl || '';
           }
         } catch (e) {}
       }
@@ -123,6 +133,8 @@ async function handler(req, res) {
       if (listing) {
         if (gameTitle) listing.title = gameTitle;
         listing.likes = likePercent;
+        listing.author = author;
+        listing.thumbUrl = thumbUrl;
         if (code) listing.code = code;
         if (typeof impressions === 'number') listing.impressions = impressions;
         if (typeof clicks === 'number') listing.clicks = clicks;
@@ -136,7 +148,9 @@ async function handler(req, res) {
           likes: likePercent,
           code,
           impressions: typeof impressions === 'number' ? impressions : 0,
-          clicks: typeof clicks === 'number' ? clicks : 0
+          clicks: typeof clicks === 'number' ? clicks : 0,
+          author,
+          thumbUrl
         });
       }
       return res.json(listing);

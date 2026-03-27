@@ -118,7 +118,7 @@ async function handler(req, res) {
           if (Array.isArray(detailsData.data) && detailsData.data[0] && detailsData.data[0].name) {
             const game = detailsData.data[0];
             gameTitle = game.name || gameTitle;
-            author = (game.builder && game.builder.name) ? game.builder.name : '';
+            author = game.builder || '';
             universeId = game.universeId;
             validGame = true;
           }
@@ -211,7 +211,7 @@ async function handler(req, res) {
               if (Array.isArray(detailsData.data) && detailsData.data[0]) {
                 const game = detailsData.data[0];
                 if (game.name && !entry.title) { entry.title = game.name; updated = true; }
-                if (game.builder && game.builder.name && !entry.author) { entry.author = game.builder.name; updated = true; }
+                if (game.builder && !entry.author) { entry.author = game.builder; updated = true; }
                 if (game.universeId && (typeof entry.likes !== 'number' || entry.likes === 0)) {
                   // Fetch like percent
                   try {

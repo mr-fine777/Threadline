@@ -337,7 +337,30 @@ function renderListings(listings) {
   if (!Array.isArray(listings) || listings.length === 0) return;
   // Remove placeholder row
   const placeholder = document.getElementById('total-form-entry');
-  if (placeholder) placeholder.parentNode.removeChild(placeholder);
+  if (placeholder) {
+    // Fill in summary row with first listing's data if available
+    const first = listings[0];
+    if (first) {
+      // Thumbnail
+      placeholder.cells[0].innerHTML = first.thumbUrl ? `<img src="${first.thumbUrl}" class="thumbnail" style="max-height:48px;vertical-align:middle;">` : '';
+      // Author
+      placeholder.cells[1].textContent = first.author || 'Unknown';
+      // Game Name (already handled elsewhere)
+      // Likes
+      let likeRatio = '';
+      if (typeof first.likes === 'number' && typeof first.impressions === 'number') {
+        likeRatio = first.impressions > 0 ? ((first.likes / first.impressions) * 100).toFixed(1) + '%' : (first.likes ? '100%' : '0%');
+      } else if (typeof first.likes === 'number') {
+        likeRatio = first.likes.toString();
+      } else {
+        likeRatio = first.likeRatio || '';
+      }
+      placeholder.cells[3].textContent = likeRatio;
+      placeholder.cells[3].title = `Like Ratio: ${likeRatio}`;
+    }
+    // The rest (impressions, clicks, CTR) are already set below
+  }
+  // Now render all listings as before
   listings.forEach((entry, idx) => {
     const newRow = table.insertRow(-1);
     for (let i = 0; i < 8; i++) newRow.insertCell();
@@ -348,7 +371,6 @@ function renderListings(listings) {
     // --- Calculate Like Ratio and CTR dynamically ---
     let likeRatio = '';
     if (typeof entry.likes === 'number' && typeof entry.impressions === 'number') {
-      // If you want like ratio as likes/impressions
       likeRatio = entry.impressions > 0 ? ((entry.likes / entry.impressions) * 100).toFixed(1) + '%' : (entry.likes ? '100%' : '0%');
     } else if (typeof entry.likes === 'number') {
       likeRatio = entry.likes.toString();

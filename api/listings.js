@@ -115,8 +115,8 @@ async function handler(req, res) {
         const detailsRes = await fetch(`https://games.roblox.com/v1/games/multiget-place-details?placeIds=${placeId}`);
         if (detailsRes.ok) {
           const detailsData = await detailsRes.json();
-          if (Array.isArray(detailsData) && detailsData[0] && detailsData[0].name) {
-            const game = detailsData[0];
+          if (Array.isArray(detailsData.data) && detailsData.data[0] && detailsData.data[0].name) {
+            const game = detailsData.data[0];
             gameTitle = game.name || gameTitle;
             author = (game.builder && game.builder.name) ? game.builder.name : '';
             universeId = game.universeId;
@@ -208,8 +208,8 @@ async function handler(req, res) {
             const detailsRes = await fetch(`https://games.roblox.com/v1/games/multiget-place-details?placeIds=${entry.placeId}`);
             if (detailsRes.ok) {
               const detailsData = await detailsRes.json();
-              if (Array.isArray(detailsData) && detailsData[0]) {
-                const game = detailsData[0];
+              if (Array.isArray(detailsData.data) && detailsData.data[0]) {
+                const game = detailsData.data[0];
                 if (game.name && !entry.title) { entry.title = game.name; updated = true; }
                 if (game.builder && game.builder.name && !entry.author) { entry.author = game.builder.name; updated = true; }
                 if (game.universeId && (typeof entry.likes !== 'number' || entry.likes === 0)) {

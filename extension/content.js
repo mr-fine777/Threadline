@@ -5,109 +5,83 @@
     async function injectThreadlineAdTiles() {
       // Check if user is premium via background.js
       try {
+        console.log('[Threadline] injectThreadlineAdTiles: running');
         chrome.runtime.sendMessage({ action: 'checkPremiumStatus' }, async function(response) {
           if (response && response.premium === true) {
-            // User is premium, skip ad injection
+            console.log('[Threadline] User is premium, skipping ad injection');
             return;
           }
           // Not premium, proceed as normal
-          // Find all 'Recommended For You' grids and use the second one
-          let allGrids = Array.from(document.querySelectorAll('div[data-testid="home-page-game-grid"] div[data-testid="game-grid"].game-grid'));
-          if (allGrids.length < 2) {
-            return;
-          }
-          let grid = allGrids[1];
-
-          // Get all game tile <li> elements
-          const tiles = Array.from(grid.querySelectorAll('li[data-testid="wide-game-tile"]'));
-          if (!tiles.length) {
-            return;
-          }
-
-          // Remove any existing Threadline ad tiles to avoid duplicates
-          const oldAds = grid.querySelectorAll('li.threadline-ad-tile');
-          if (oldAds.length > 0) {
-            oldAds.forEach(el => el.remove());
-          }
-
-          // Fetch 5 random sponsored listings from new API
-          let sponsoredListings = [];
-          try {
-            const res = await fetch('https://rbxthread.app/api/sponsored');
-            if (res.ok) {
-              sponsoredListings = await res.json();
+          let attempt = 0;
+          const maxAttempts = 30; // 30 * 500ms = 15s max
+          async function waitForTiles() {
+            let allGrids = Array.from(document.querySelectorAll('div[data-testid="home-page-game-grid"] div[data-testid="game-grid"].game-grid'));
+            console.log('[Threadline] Found home-page-game-grids:', allGrids.length);
+            if (allGrids.length < 1) {
+              if (attempt++ < maxAttempts) {
+                setTimeout(waitForTiles, 500);
+              } else {
+                console.warn('[Threadline] Not enough grids found after waiting, skipping');
+              }
+              return;
             }
-          } catch (err) {
-            sponsoredListings = [];
-          }
-
-          // Helper to build sponsored listing HTML
-          function buildSponsoredTile(listing) {
-            const gameId = listing.placeId || '';
-            const gameUrl = `https://www.roblox.com/games/${gameId}`;
-            const thumbnail = listing.thumbUrl || `https://www.roblox.com/asset-thumbnail/image?assetId=${gameId}&width=768&height=432&format=png`;
-            const gameName = listing.title || 'Sponsored Game';
-            const likes = (typeof listing.likes === 'number' ? listing.likes : '') + ' Rating';
-            return `
-              <div class="featured-game-container game-card-container">
-                <a class="game-card-link" href="${gameUrl}" tabindex="0" target="_blank">
-                  <div class="featured-game-icon-container">
-                    <span class="thumbnail-2d-container brief-game-icon">
-                      <img class="" src="${thumbnail}" alt="${gameName}" title="${gameName}">
-                    </span>
-                  </div>
-                  <div class="info-container">
-                    <div class="info-metadata-container">
-                      <div class="game-card-name game-name-title" data-testid="game-tile-game-title" title="${gameName}">
-                        ${gameName}
-                      </div>
-                      <div class="wide-game-tile-metadata">
-                        <div class="base-metadata">
-                          <div class="game-card-info" data-testid="game-tile-stats-rating">
-                            <span class="info-label icon-votes-gray"></span>
-                            <span class="info-label vote-percentage-label">${likes}</span>
-                          </div>
-                        </div>
-                        <div class="hover-metadata"></div>
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            `;
-          }
-
-          // Replace every 4th tile (i.e., after every 3 normal listings) with a sponsored listing, cycling through the 5
-          let sponsoredIndex = 0;
-          for (let i = 3; i < tiles.length; i += 4) {
-            const oldTile = tiles[i];
-            if (!oldTile) continue;
-            const adTile = document.createElement('li');
-            adTile.className = 'list-item hover-game-tile grid-tile old-hover threadline-ad-tile';
-            adTile.setAttribute('data-testid', 'wide-game-tile');
-            if (sponsoredListings.length > 0) {
-              const listing = sponsoredListings[sponsoredIndex % sponsoredListings.length];
-              adTile.id = listing.placeId || '';
-              adTile.innerHTML = buildSponsoredTile(listing);
-              sponsoredIndex++;
-            } else {
-              // fallback to default ad if no sponsored listings
-              adTile.innerHTML = `
+            let grid = allGrids[0];
+            const tiles = Array.from(grid.querySelectorAll('li[data-testid="wide-game-tile"]'));
+            console.log('[Threadline] Found tiles:', tiles.length);
+            if (tiles.length < 30) {
+              if (attempt++ < maxAttempts) {
+                setTimeout(waitForTiles, 500);
+              } else {
+                console.warn('[Threadline] Not enough tiles found after waiting, skipping');
+              }
+              return;
+            }
+            // ...existing code...
+            // Remove any existing Threadline ad tiles to avoid duplicates
+            const oldAds = grid.querySelectorAll('li.threadline-ad-tile');
+            if (oldAds.length > 0) {
+              console.log('[Threadline] Removing old ad tiles:', oldAds.length);
+              oldAds.forEach(el => el.remove());
+            }
+            // Fetch 5 random sponsored listings from new API
+            let sponsoredListings = [];
+            try {
+              const res = await fetch('https://rbxthread.app/api/sponsored');
+              if (res.ok) {
+                sponsoredListings = await res.json();
+                console.log('[Threadline] Sponsored listings loaded:', sponsoredListings.length);
+              } else {
+                console.warn('[Threadline] Sponsored API not ok:', res.status);
+              }
+            } catch (err) {
+              console.error('[Threadline] Sponsored API fetch error:', err);
+              sponsoredListings = [];
+            }
+            function buildSponsoredTile(listing) {
+              const gameId = listing.placeId || '';
+              const gameUrl = `https://www.roblox.com/games/${gameId}`;
+              const thumbnail = listing.thumbUrl || `https://www.roblox.com/asset-thumbnail/image?assetId=${gameId}&width=768&height=432&format=png`;
+              const gameName = listing.title || 'Sponsored Game';
+              const likes = (typeof listing.likes === 'number' ? listing.likes : '') + ' Rating';
+              return `
                 <div class="featured-game-container game-card-container">
-                  <a class="game-card-link" href="https://rbxthread.app/premium.html" tabindex="0">
+                  <a class="game-card-link" href="${gameUrl}" tabindex="0" target="_blank">
                     <div class="featured-game-icon-container">
                       <span class="thumbnail-2d-container brief-game-icon">
-                        <iframe style="height: calc(calc((calc(var(--home-feed-width) - 1px) - calc(16px * (var(--items-per-row) - 1))) / var(--items-per-row)) * .5625); width: calc((calc(var(--home-feed-width) - 1px) - calc(16px * (var(--items-per-row) - 1))) / var(--items-per-row)); overflow: hidden; border: none;" src="https://www.rbxthread.app/ads/tileset.html" scrolling="no" border="none"></iframe>
+                        <img class="" src="${thumbnail}" alt="${gameName}" title="${gameName}">
                       </span>
                     </div>
                     <div class="info-container">
                       <div class="info-metadata-container">
-                        <div class="game-card-name game-name-title" data-testid="game-tile-game-title" title="Threadline Ads">
-                          Threadline Ads
+                        <div class="game-card-name game-name-title" data-testid="game-tile-game-title" title="${gameName}">
+                          ${gameName}
                         </div>
                         <div class="wide-game-tile-metadata">
                           <div class="base-metadata">
-                            <div class="game-card-info" data-testid="game-tile-stats-rating"></div>
+                            <div class="game-card-info" data-testid="game-tile-stats-rating">
+                              <span class="info-label icon-votes-gray"></span>
+                              <span class="info-label vote-percentage-label">${likes}</span>
+                            </div>
                           </div>
                           <div class="hover-metadata"></div>
                         </div>
@@ -117,62 +91,54 @@
                 </div>
               `;
             }
-            grid.replaceChild(adTile, oldTile);
+            let sponsoredIndex = 0;
+            for (let i = 3; i < tiles.length; i += 4) {
+              const oldTile = tiles[i];
+              if (!oldTile) continue;
+              const adTile = document.createElement('li');
+              adTile.className = 'list-item hover-game-tile grid-tile old-hover threadline-ad-tile';
+              adTile.setAttribute('data-testid', 'wide-game-tile');
+              if (sponsoredListings.length > 0) {
+                const listing = sponsoredListings[sponsoredIndex % sponsoredListings.length];
+                adTile.id = listing.placeId || '';
+                adTile.innerHTML = buildSponsoredTile(listing);
+                sponsoredIndex++;
+                console.log('[Threadline] Injected sponsored listing at tile', i, listing);
+              } else {
+                adTile.innerHTML = `
+                  <div class="featured-game-container game-card-container">
+                    <a class="game-card-link" href="https://rbxthread.app/premium.html" tabindex="0">
+                      <div class="featured-game-icon-container">
+                        <span class="thumbnail-2d-container brief-game-icon">
+                          <iframe style="height: calc(calc((calc(var(--home-feed-width) - 1px) - calc(16px * (var(--items-per-row) - 1))) / var(--items-per-row)) * .5625); width: calc((calc(var(--home-feed-width) - 1px) - calc(16px * (var(--items-per-row) - 1))) / var(--items-per-row)); overflow: hidden; border: none;" src="https://www.rbxthread.app/ads/tileset.html" scrolling="no" border="none"></iframe>
+                        </span>
+                      </div>
+                      <div class="info-container">
+                        <div class="info-metadata-container">
+                          <div class="game-card-name game-name-title" data-testid="game-tile-game-title" title="Threadline Ads">
+                            Threadline Ads
+                          </div>
+                          <div class="wide-game-tile-metadata">
+                            <div class="base-metadata">
+                              <div class="game-card-info" data-testid="game-tile-stats-rating"></div>
+                            </div>
+                            <div class="hover-metadata"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                `;
+                console.log('[Threadline] Injected fallback ad at tile', i);
+              }
+              grid.replaceChild(adTile, oldTile);
+            }
           }
+          waitForTiles();
+          // Remove any existing Threadline ad tiles to avoid duplicates
         });
       } catch (e) {
-        // fallback: if error, just run as normal (no sponsored listings)
-        let allGrids = Array.from(document.querySelectorAll('div[data-testid="home-page-game-grid"] div[data-testid="game-grid"].game-grid'));
-        if (allGrids.length < 2) {
-          return;
-        }
-        let grid = allGrids[1];
-
-        // Get all game tile <li> elements
-        const tiles = Array.from(grid.querySelectorAll('li[data-testid="wide-game-tile"]'));
-        if (!tiles.length) {
-          return;
-        }
-
-        // Remove any existing Threadline ad tiles to avoid duplicates
-        const oldAds = grid.querySelectorAll('li.threadline-ad-tile');
-        if (oldAds.length > 0) {
-          oldAds.forEach(el => el.remove());
-        }
-
-        // Replace every 3rd tile with the default ad
-        for (let i = 2; i < tiles.length; i += 3) {
-          const oldTile = tiles[i];
-          if (!oldTile) continue;
-          const adTile = document.createElement('li');
-          adTile.className = 'list-item hover-game-tile grid-tile old-hover threadline-ad-tile';
-          adTile.setAttribute('data-testid', 'wide-game-tile');
-          adTile.innerHTML = `
-            <div class="featured-game-container game-card-container">
-              <a class="game-card-link" href="https://rbxthread.app/premium.html" tabindex="0">
-                <div class="featured-game-icon-container">
-                  <span class="thumbnail-2d-container brief-game-icon">
-                    <iframe style="height: calc(calc((calc(var(--home-feed-width) - 1px) - calc(16px * (var(--items-per-row) - 1))) / var(--items-per-row)) * .5625); width: calc((calc(var(--home-feed-width) - 1px) - calc(16px * (var(--items-per-row) - 1))) / var(--items-per-row)); overflow: hidden; border: none;" src="https://www.rbxthread.app/ads/tileset.html" scrolling="no" border="none"></iframe>
-                  </span>
-                </div>
-                <div class="info-container">
-                  <div class="info-metadata-container">
-                    <div class="game-card-name game-name-title" data-testid="game-tile-game-title" title="Threadline Ads">
-                      Threadline Ads
-                    </div>
-                    <div class="wide-game-tile-metadata">
-                      <div class="base-metadata">
-                        <div class="game-card-info" data-testid="game-tile-stats-rating"></div>
-                      </div>
-                      <div class="hover-metadata"></div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-          `;
-          grid.replaceChild(adTile, oldTile);
-        }
+        console.error('[Threadline] injectThreadlineAdTiles error:', e);
       }
     }
 

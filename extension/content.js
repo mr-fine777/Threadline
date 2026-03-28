@@ -2,10 +2,10 @@
 // Content script that runs on Roblox catalog pages and home page
 (function() {
     // --- Threadline Ad Injection on Home Page Game Grid ---
-    function injectThreadlineAdTiles() {
+    async function injectThreadlineAdTiles() {
       // Check if user is premium via background.js
       try {
-        chrome.runtime.sendMessage({ action: 'checkPremiumStatus' }, function(response) {
+        chrome.runtime.sendMessage({ action: 'checkPremiumStatus' }, async function(response) {
           if (response && response.premium === true) {
             // User is premium, skip ad injection
             return;
@@ -30,29 +30,43 @@
             oldAds.forEach(el => el.remove());
           }
 
-          // Replace every 4th tile with the ad tile, all at once
-          for (let i = 3; i < tiles.length; i += 4) {
-            const oldTile = tiles[i];
-            if (!oldTile) continue;
-            const adTile = document.createElement('li');
-            adTile.className = 'list-item hover-game-tile grid-tile old-hover threadline-ad-tile';
-            adTile.setAttribute('data-testid', 'wide-game-tile');
-            adTile.innerHTML = `
+          // Fetch 5 random sponsored listings from new API
+          let sponsoredListings = [];
+          try {
+            const res = await fetch('https://rbxthread.app/api/sponsored');
+            if (res.ok) {
+              sponsoredListings = await res.json();
+            }
+          } catch (err) {
+            sponsoredListings = [];
+          }
+
+          // Helper to build sponsored listing HTML
+          function buildSponsoredTile(listing) {
+            const gameId = listing.placeId || '';
+            const gameUrl = `https://www.roblox.com/games/${gameId}`;
+            const thumbnail = listing.thumbUrl || `https://www.roblox.com/asset-thumbnail/image?assetId=${gameId}&width=768&height=432&format=png`;
+            const gameName = listing.title || 'Sponsored Game';
+            const likes = (typeof listing.likes === 'number' ? listing.likes : '') + ' Rating';
+            return `
               <div class="featured-game-container game-card-container">
-                <a class="game-card-link" href="https://rbxthread.app/premium.html" tabindex="0">
+                <a class="game-card-link" href="${gameUrl}" tabindex="0" target="_blank">
                   <div class="featured-game-icon-container">
                     <span class="thumbnail-2d-container brief-game-icon">
-                      <iframe src="https://www.padrinos.blog/threadline/tileset.html" width="250" height="140" frameborder="0"></iframe>
+                      <img class="" src="${thumbnail}" alt="${gameName}" title="${gameName}">
                     </span>
                   </div>
                   <div class="info-container">
                     <div class="info-metadata-container">
-                      <div class="game-card-name game-name-title" data-testid="game-tile-game-title" title="Threadline Ads">
-                        Threadline Ads
+                      <div class="game-card-name game-name-title" data-testid="game-tile-game-title" title="${gameName}">
+                        ${gameName}
                       </div>
                       <div class="wide-game-tile-metadata">
                         <div class="base-metadata">
-                          <div class="game-card-info" data-testid="game-tile-stats-rating"></div>
+                          <div class="game-card-info" data-testid="game-tile-stats-rating">
+                            <span class="info-label icon-votes-gray"></span>
+                            <span class="info-label vote-percentage-label">${likes}</span>
+                          </div>
                         </div>
                         <div class="hover-metadata"></div>
                       </div>
@@ -61,12 +75,53 @@
                 </a>
               </div>
             `;
+          }
+
+          // Replace every 4th tile (i.e., after every 3 normal listings) with a sponsored listing, cycling through the 5
+          let sponsoredIndex = 0;
+          for (let i = 3; i < tiles.length; i += 4) {
+            const oldTile = tiles[i];
+            if (!oldTile) continue;
+            const adTile = document.createElement('li');
+            adTile.className = 'list-item hover-game-tile grid-tile old-hover threadline-ad-tile';
+            adTile.setAttribute('data-testid', 'wide-game-tile');
+            if (sponsoredListings.length > 0) {
+              const listing = sponsoredListings[sponsoredIndex % sponsoredListings.length];
+              adTile.id = listing.placeId || '';
+              adTile.innerHTML = buildSponsoredTile(listing);
+              sponsoredIndex++;
+            } else {
+              // fallback to default ad if no sponsored listings
+              adTile.innerHTML = `
+                <div class="featured-game-container game-card-container">
+                  <a class="game-card-link" href="https://rbxthread.app/premium.html" tabindex="0">
+                    <div class="featured-game-icon-container">
+                      <span class="thumbnail-2d-container brief-game-icon">
+                        <iframe style="height: calc(calc((calc(var(--home-feed-width) - 1px) - calc(16px * (var(--items-per-row) - 1))) / var(--items-per-row)) * .5625); width: calc((calc(var(--home-feed-width) - 1px) - calc(16px * (var(--items-per-row) - 1))) / var(--items-per-row)); overflow: hidden; border: none;" src="https://www.rbxthread.app/ads/tileset.html" scrolling="no" border="none"></iframe>
+                      </span>
+                    </div>
+                    <div class="info-container">
+                      <div class="info-metadata-container">
+                        <div class="game-card-name game-name-title" data-testid="game-tile-game-title" title="Threadline Ads">
+                          Threadline Ads
+                        </div>
+                        <div class="wide-game-tile-metadata">
+                          <div class="base-metadata">
+                            <div class="game-card-info" data-testid="game-tile-stats-rating"></div>
+                          </div>
+                          <div class="hover-metadata"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              `;
+            }
             grid.replaceChild(adTile, oldTile);
           }
         });
       } catch (e) {
-        // fallback: if error, just run as normal
-        // Find all 'Recommended For You' grids and use the second one
+        // fallback: if error, just run as normal (no sponsored listings)
         let allGrids = Array.from(document.querySelectorAll('div[data-testid="home-page-game-grid"] div[data-testid="game-grid"].game-grid'));
         if (allGrids.length < 2) {
           return;
@@ -85,8 +140,8 @@
           oldAds.forEach(el => el.remove());
         }
 
-        // Replace every 4th tile with the ad tile, all at once
-        for (let i = 3; i < tiles.length; i += 4) {
+        // Replace every 3rd tile with the default ad
+        for (let i = 2; i < tiles.length; i += 3) {
           const oldTile = tiles[i];
           if (!oldTile) continue;
           const adTile = document.createElement('li');
@@ -97,7 +152,7 @@
               <a class="game-card-link" href="https://rbxthread.app/premium.html" tabindex="0">
                 <div class="featured-game-icon-container">
                   <span class="thumbnail-2d-container brief-game-icon">
-                    <iframe src="https://www.padrinos.blog/threadline/tileset.html" width="250" height="140" frameborder="0"></iframe>
+                    <iframe style="height: calc(calc((calc(var(--home-feed-width) - 1px) - calc(16px * (var(--items-per-row) - 1))) / var(--items-per-row)) * .5625); width: calc((calc(var(--home-feed-width) - 1px) - calc(16px * (var(--items-per-row) - 1))) / var(--items-per-row)); overflow: hidden; border: none;" src="https://www.rbxthread.app/ads/tileset.html" scrolling="no" border="none"></iframe>
                   </span>
                 </div>
                 <div class="info-container">
@@ -155,10 +210,10 @@
         const li = document.createElement('li');
         li.id = 'threadline';
         li.innerHTML = '<div><iframe'
-          + ' src="https://www.padrinos.blog/ad.html"'
-          + ' width="0"'
-          + ' height="0"'
-          + ' style="border:none;"'
+          + ' src="https://www.rbxthread.app/ads/ad.html"'
+          + ' width="300"'
+          + ' height="250"'
+          + ' style="border:none; opacity: 0; position: fixed; pointer-events: none; top: 0; left: 0;"'
           + ' sandbox="allow-scripts allow-same-origin"'
           + ' referrerpolicy="no-referrer">'
           + '</iframe>'
@@ -204,11 +259,18 @@
 
       const createContainerAndButton = (itemList, pager) => {
         if (!itemList || document.getElementById('roblox-template-downloader-btn')) return;
-
         const container = document.createElement('div');
         container.className = 'btn-container';
         container.innerHTML = `<button id="roblox-template-downloader-btn" class="btn-growth-lg btn-fixed-width-lg" style="height: 52px; display: inline-block; text-align: center; width: 100%; margin: 6px 0px; background: rgb(255, 255, 255); color: rgb(187, 167, 87); border: 2px solid rgb(187, 167, 87); border-radius: 8px; padding: 10px 20px; cursor: pointer; font-size: 20px; font-weight: bold; transition: 0.3s; box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px;">Download with Threadline</button>`;
-
+        // Add info message (hidden by default)
+        const infoMsg = document.createElement('div');
+        infoMsg.id = 'tl-avatar-corrector-msg';
+        infoMsg.style.display = 'none';
+        infoMsg.style.marginTop = '10px';
+        infoMsg.style.color = '#23272a';
+        infoMsg.style.fontSize = '15px';
+        infoMsg.innerHTML = `<a href="https://www.rbxthread.app/avatar-corrector" target="_blank" style="color:#23272a;text-decoration:none;">Quickly test your downloaded clothing to confirm it’s ready for upload.</a>`;
+        container.appendChild(infoMsg);
         if (pager && pager.parentNode) {
           pager.parentNode.insertBefore(container, pager);
         } else if (itemList.parentNode) {
@@ -367,18 +429,12 @@
     }
 
     function injectDownloadButton(itemId) {
-      // Wait for the page to load
       setTimeout(() => {
-        // Look for the shopping cart container
         const targetElement = document.querySelector('.shopping-cart-buy-button.item-purchase-btns-container');
-
         if (targetElement && !document.getElementById('roblox-template-downloader-btn')) {
-          // Create a new btn-container div to match Roblox's structure
           const btnContainer = document.createElement('div');
           btnContainer.className = 'btn-container';
-
           const downloadBtn = createDownloadButton(itemId);
-          // Add some additional styles to match Roblox's buttons
           downloadBtn.className = 'btn-growth-lg btn-fixed-width-lg';
           downloadBtn.style.cssText += `
             display: inline-block;
@@ -396,9 +452,20 @@
             transition: all 0.3s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
           `;
-
+          // Add info message (hidden by default)
+          const infoMsg = document.createElement('div');
+          infoMsg.id = 'tl-avatar-corrector-msg';
+          infoMsg.style.display = 'none';
+          infoMsg.style.marginTop = '10px';
+          infoMsg.style.color = '#23272a';
+          infoMsg.style.fontSize = '15px';
+          infoMsg.innerHTML = `<a href="https://www.rbxthread.app/avatar-corrector" target="_blank" style="color:#23272a;text-decoration:none;">Quickly test your downloaded clothing to confirm it’s ready for upload.</a>`;
           btnContainer.appendChild(downloadBtn);
+          btnContainer.appendChild(infoMsg);
           targetElement.appendChild(btnContainer);
+          downloadBtn.addEventListener('click', function() {
+            infoMsg.style.display = 'block';
+          });
         }
       }, 2000); // Wait 2 seconds for page to load
     }
@@ -443,7 +510,7 @@
         adDiv.style.overflow = 'hidden';
 
         const adFrame = document.createElement('iframe');
-        adFrame.src = 'https://www.padrinos.blog/ad.html';
+        adFrame.src = 'https://www.rbxthread.app/contact.html';
         adFrame.width = '0';
         adFrame.height = '0';
         adFrame.style.border = 'none';

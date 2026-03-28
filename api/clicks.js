@@ -44,7 +44,15 @@ async function handler(req, res) {
 		return res.status(405).json({ error: 'Method not allowed' });
 	}
 	await connectToDatabase();
-	const placeId = req.query.placeId || req.query.PLACEID || req.query.id || req.url.split('?')[1]?.split('=')[1];
+	let placeId = req.query.placeId || req.query.PLACEID || req.query.id;
+	if (!placeId && req.url.includes('?')) {
+	  const query = req.url.split('?')[1];
+	  if (query && !query.includes('=')) {
+	    placeId = query;
+	  } else if (query && query.includes('=')) {
+	    placeId = query.split('=')[1];
+	  }
+	}
 	if (!placeId) return res.status(400).json({ error: 'Missing placeId' });
 	try {
 		const listing = await Listing.findOneAndUpdate(

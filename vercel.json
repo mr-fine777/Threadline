@@ -4,8 +4,10 @@
   "rewrites": [
     { "source": "/api/listings", "destination": "/api/listings.js" },
     { "source": "/api/listings/:match*", "destination": "/api/listings.js" },
-  { "source": "/api/sponsored", "destination": "/api/sponsored.js" },
-  { "source": "/api/views.js", "destination": "/api/views.js" },
-  { "source": "/api/clicks.js", "destination": "/api/clicks.js" }
+    { "source": "/api/sponsored", "destination": "/api/sponsored.js" },
+    { "source": "/api/views.js", "destination": "/api/views.js" },
+    { "source": "/api/views", "destination": "/api/views.js" },
+    { "source": "/api/clicks.js", "destination": "/api/clicks.js" },
+    { "source": "/api/clicks", "destination": "/api/clicks.js" }
   ]
 }

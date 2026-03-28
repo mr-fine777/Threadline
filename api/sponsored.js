@@ -30,20 +30,24 @@ const ListingSchema = new mongoose.Schema({
 
 const Listing = mongoose.models.Listing || mongoose.model('Listing', ListingSchema, 'rbxthread');
 
-async function handler(req, res) {
-    // --- CORS headers for all responses ---
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    // Handle preflight OPTIONS request
-    if (req.method === 'OPTIONS') {
-      return res.status(200).end();
-    }
-  await connectToDatabase();
+async function handler(req, res) {
+  // --- CORS headers for all responses ---
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle preflight OPTIONS request immediately
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  // Only connect to DB for GET
+  await connectToDatabase();
   try {
     const count = await Listing.countDocuments();
     if (count === 0) return res.status(404).json({ error: 'No listings found' });

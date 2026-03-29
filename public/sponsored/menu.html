@@ -521,7 +521,7 @@ function fetchPlaceInfo() {
     .then(listings => {
       if (Array.isArray(listings)) {
         if (listings.length >= 5) {
-          document.getElementById('error').textContent = 'You can only have 5 sponsored listings per code.';
+          document.getElementById('error').textContent = "You've hit the limit for Sponsored Listings.";
           return;
         }
         if (listings.some(entry => entry.placeId == placeId)) {

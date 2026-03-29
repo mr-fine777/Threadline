@@ -568,15 +568,31 @@ function fetchPlaceInfo() {
 document.addEventListener('DOMContentLoaded', function() {
   // Interstitial logic
   showInterstitial();
+
+  // Helper: Check premium status for a code
+  function checkPremiumStatus(code) {
+    return fetch(`https://spotted-resting-position-api-mo9h.vercel.app/api/check-premium?code=${encodeURIComponent(code)}`)
+      .then(res => res.ok ? res.json() : { premium: false })
+      .catch(() => ({ premium: false }));
+  }
+
   document.getElementById('accessCodeBtn').addEventListener('click', function() {
     const code = document.getElementById('accessCodeInput').value.trim();
     if (!validateAccessCode(code)) {
       document.getElementById('accessCodeError').textContent = 'Invalid Threadline Access Code';
       return;
     }
-    threadlineAccessCode = code;
-    hideInterstitial();
-    fetchListingsForCode(threadlineAccessCode);
+    // Check premium status before allowing entry
+    checkPremiumStatus(code).then(result => {
+      if (!result.premium) {
+        document.getElementById('accessCodeError').innerHTML =
+          'This access code does not have Threadline Premium, (<a href="https://www.rbxthread.app/premium" target="_blank" style="color:#53216e;text-decoration:underline;">buy it here</a>)';
+        return;
+      }
+      threadlineAccessCode = code;
+      hideInterstitial();
+      fetchListingsForCode(threadlineAccessCode);
+    });
   });
   document.getElementById('accessCodeInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') document.getElementById('accessCodeBtn').click();
@@ -591,9 +607,21 @@ document.addEventListener('DOMContentLoaded', function() {
   var btn = document.getElementById('fetchPlaceBtn');
   var input = document.getElementById('placeInput');
   if (btn) btn.addEventListener('click', fetchPlaceInfo);
-  if (input) input.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') fetchPlaceInfo();
-  });
+  if (input) {
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') fetchPlaceInfo();
+    });
+    // On paste, check premium again and redirect if not
+    input.addEventListener('paste', function(e) {
+      // Use the last entered code
+      if (!threadlineAccessCode) return;
+      checkPremiumStatus(threadlineAccessCode).then(result => {
+        if (!result.premium) {
+          window.location.href = 'https://www.rbxthread.app/premium';
+        }
+      });
+    });
+  }
 });
 // NOTE: You must add a DELETE endpoint to your backend for this to work:
 // app.delete('/api/listings', async (req, res) => {

@@ -368,6 +368,7 @@ function renderListings(listings) {
     }
     newRow.cells[6].textContent = ctr;
     newRow.cells[7].innerHTML = `
+      <button class="manage-btn manage-edit" title="Edit" style="background:#f4ce6e;color:#53216e;border:none;border-radius:4px;padding:4px 10px;margin-right:6px;cursor:pointer;font-weight:bold;"><i class="fa-solid fa-pencil"></i></button>
       <button class="manage-btn manage-delete" title="Delete" style="background:#53216e;color:#fff;border:none;border-radius:4px;padding:4px 10px;cursor:pointer;font-weight:bold;"><i class="fa-solid fa-x"></i></button>
       <div class="edit-box" style="display:none;margin-top:8px;"></div>
     `;
@@ -521,7 +522,7 @@ function fetchPlaceInfo() {
     .then(listings => {
       if (Array.isArray(listings)) {
         if (listings.length >= 5) {
-          document.getElementById('error').textContent = "You've hit the limit for Sponsored Listings.";
+          document.getElementById('error').textContent = 'You can only have 5 sponsored listings per code.';
           return;
         }
         if (listings.some(entry => entry.placeId == placeId)) {
@@ -567,31 +568,15 @@ function fetchPlaceInfo() {
 document.addEventListener('DOMContentLoaded', function() {
   // Interstitial logic
   showInterstitial();
-
-  // Helper: Check premium status for a code
-  function checkPremiumStatus(code) {
-    return fetch(`https://spotted-resting-position-api-mo9h.vercel.app/api/check-premium?code=${encodeURIComponent(code)}`)
-      .then(res => res.ok ? res.json() : { premium: false })
-      .catch(() => ({ premium: false }));
-  }
-
   document.getElementById('accessCodeBtn').addEventListener('click', function() {
     const code = document.getElementById('accessCodeInput').value.trim();
     if (!validateAccessCode(code)) {
       document.getElementById('accessCodeError').textContent = 'Invalid Threadline Access Code';
       return;
     }
-    // Check premium status before allowing entry
-    checkPremiumStatus(code).then(result => {
-      if (!result.premium) {
-        document.getElementById('accessCodeError').innerHTML =
-          'This access code does not have Threadline Premium, (<a href="https://www.rbxthread.app/premium" target="_blank" style="color:#53216e;text-decoration:underline;">buy it here</a>)';
-        return;
-      }
-      threadlineAccessCode = code;
-      hideInterstitial();
-      fetchListingsForCode(threadlineAccessCode);
-    });
+    threadlineAccessCode = code;
+    hideInterstitial();
+    fetchListingsForCode(threadlineAccessCode);
   });
   document.getElementById('accessCodeInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') document.getElementById('accessCodeBtn').click();
@@ -606,21 +591,9 @@ document.addEventListener('DOMContentLoaded', function() {
   var btn = document.getElementById('fetchPlaceBtn');
   var input = document.getElementById('placeInput');
   if (btn) btn.addEventListener('click', fetchPlaceInfo);
-  if (input) {
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') fetchPlaceInfo();
-    });
-    // On paste, check premium again and redirect if not
-    input.addEventListener('paste', function(e) {
-      // Use the last entered code
-      if (!threadlineAccessCode) return;
-      checkPremiumStatus(threadlineAccessCode).then(result => {
-        if (!result.premium) {
-          window.location.href = 'https://www.rbxthread.app/premium';
-        }
-      });
-    });
-  }
+  if (input) input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') fetchPlaceInfo();
+  });
 });
 // NOTE: You must add a DELETE endpoint to your backend for this to work:
 // app.delete('/api/listings', async (req, res) => {

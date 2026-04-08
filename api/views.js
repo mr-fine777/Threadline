@@ -57,7 +57,7 @@ async function handler(req, res) {
 	try {
 		const listing = await Listing.findOneAndUpdate(
 			{ placeId },
-			{ $inc: { impressions: 7 } },
+			{ $inc: { impressions: 1 } },
 			{ new: true }
 		);
 		if (!listing) return res.status(404).json({ error: 'Listing not found' });

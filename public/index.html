@@ -457,10 +457,74 @@
 <h3>Threadline 1.0.0 </h3>
 <p>Launch<p>
 </div>
-<div class="fancy-hr">
+<!-- FAQ DROPDOWN SECTION START -->
+<div class="article-card faq-dropdown-section">
+  <h2 style="text-align:center; color:#f4ce6e; margin-bottom: 24px;">Frequently Asked Questions</h2>
+  <div class="faq-dropdown-list">
+    <div class="faq-item">
+      <div class="faq-question">How can you download Roblox clothes for free?</div>
+      <div class="faq-answer">Roblox clothing templates can be downloaded by retrieving the PNG image used by the clothing asset on Roblox. Tools like Threadline allow users to paste the item link and automatically extract the clothing template so it can be downloaded and edited without needing to manually locate the asset.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">Where can you get free Roblox clothing template PNG files?</div>
+      <div class="faq-answer">Free Roblox clothing template PNG files can be obtained from the image asset used by the clothing item on Roblox. By using tools such as Threadline, users can enter the clothing item link and quickly download the original template image used for that shirt or pants.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">Is there a Discord bot that can download Roblox clothing templates?</div>
+      <div class="faq-answer">Yes, some Discord bots allow users to retrieve Roblox clothing templates by providing a clothing item link. Threadline offers a Discord bot that can automatically fetch the clothing asset image and return the template file so it can be downloaded or saved directly from Discord.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">How do you download a Roblox shirt template?</div>
+      <div class="faq-answer">To download a Roblox shirt template, you need to access the image asset associated with the clothing item. This can be done manually by locating the asset image or automatically by using a tool like Threadline that extracts the template PNG when you provide the Roblox item link.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">Can you copy Roblox clothes from other players?</div>
+      <div class="faq-answer">Roblox clothing items use template images that can sometimes be accessed through the asset system. If the clothing item is publicly accessible, tools can retrieve the image file used for the design. This allows users to view or download the template for reference or editing.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">What size is a Roblox clothing template?</div>
+      <div class="faq-answer">A standard Roblox shirt template uses a PNG image that is typically 585 by 559 pixels. This template layout includes sections for the torso, arms, and sides of the avatar, allowing creators to design custom clothing that wraps correctly around the Roblox character model.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">How do Roblox clothing assets work?</div>
+      <div class="faq-answer">Roblox clothing assets are image files uploaded by creators that are mapped onto the avatar model. These assets are stored on Roblox's servers and displayed when the clothing item is worn. The template image determines how the design appears across the avatar's torso and arms.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">Can you edit Roblox clothes after downloading the template?</div>
+      <div class="faq-answer">Yes, once a Roblox clothing template PNG is downloaded, it can be edited using image editing software such as Photoshop, GIMP, or other graphic tools. Creators can modify colors, patterns, or designs before uploading a new clothing item to Roblox.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">How do you make custom Roblox clothing?</div>
+      <div class="faq-answer">To create custom Roblox clothing, you start by editing a clothing template PNG that matches the Roblox avatar layout. After designing the shirt or pants, the image can be uploaded through the Roblox creator dashboard where it becomes a wearable item for avatars.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">Are Roblox clothing templates free to download?</div>
+      <div class="faq-answer">Roblox clothing templates themselves are freely available and widely shared online for creators to design clothing. However, individual clothing items created by other users may be sold in the Roblox catalog, while the underlying template format remains free to use for design purposes.</div>
+    </div>
+  </div>
+</div>
+<!-- FAQ DROPDOWN SECTION END -->
+<script>
+// FAQ click-to-open logic
+document.addEventListener('DOMContentLoaded', function() {
+  var faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(function(item) {
+    var question = item.querySelector('.faq-question');
+    question.style.cursor = 'pointer';
+    question.addEventListener('click', function() {
+      var isActive = item.classList.contains('active');
+      faqItems.forEach(function(i) { i.classList.remove('active'); });
+      if (!isActive) item.classList.add('active');
+    });
+  });
+});
+</script>
+ <div class="fancy-hr">
   <span class="line"></span>
   <img src="img/posh.png">
   <span class="line"></span>
+</div>
+<div class="bottom-flex">
 </div>
 <div id="terms-privacy" style="margin: 0 auto; display: flex; align-items: center; justify-content: center; flex-direction: column; height: 0px;" class="article-card">
     <h1 id="about">Contact Threadline</h1>
@@ -494,10 +558,5 @@
     </div>
   </div>
 </div>
-<script type="text/javascript">
-var infolinks_pid = 3444252;
-var infolinks_wsid = 0;
-</script>
-<script type="text/javascript" src="http://resources.infolinks.com/js/infolinks_main.js"></script>
 </body>
 </html>

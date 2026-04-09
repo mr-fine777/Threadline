@@ -64,26 +64,29 @@ fetch('https://www.rbxthread.app/api/sponsored')
 		viewsFrame.height = 0;
 		viewsFrame.title = 'views';
 		document.body.appendChild(viewsFrame);
-
-			// On click, track click with fetch (for Firefox compatibility), fallback to iframe if needed
-			a.addEventListener('click', function(e) {
-				e.preventDefault(); // Prevent immediate navigation
-				const clickUrl = `https://www.rbxthread.app/api/clicks?${entry.placeId}`;
-				// Send tracking (fire and forget)
-				fetch(clickUrl, {mode: 'no-cors'});
-				// Fallback: If fetch fails, use iframe (no redirect logic needed)
-				setTimeout(() => {
-					const clickFrame = document.createElement('iframe');
-					clickFrame.src = clickUrl;
-					clickFrame.style.display = 'none';
-					clickFrame.width = 0;
-					clickFrame.height = 0;
-					clickFrame.title = 'clicks';
-					document.body.appendChild(clickFrame);
-				}, 200);
-				// Open the game in a new tab
-				window.open(gameUrl, '_blank', 'noopener');
-			});
+            
+		// On click, add iframe for clicks and wait for it to load before redirect
+		a.addEventListener('click', function(e) {
+			e.preventDefault(); // Prevent immediate navigation
+			const clickFrame = document.createElement('iframe');
+			clickFrame.src = `https://www.rbxthread.app/api/clicks?${entry.placeId}`;
+			clickFrame.style.display = 'none';
+			clickFrame.width = 0;
+			clickFrame.height = 0;
+			clickFrame.title = 'clicks';
+			// Always redirect the top-level window (main tab), even if inside an iframe
+			const redirect = () => {
+				if (window.top) {
+					window.top.location.href = gameUrl;
+				} else {
+					window.location.href = gameUrl;
+				}
+			};
+			clickFrame.onload = redirect;
+			// Fallback: If iframe doesn't load in 1.5s, redirect anyway
+			setTimeout(redirect, 1500);
+			document.body.appendChild(clickFrame);
+		});
 	});
 </script>
 </html>

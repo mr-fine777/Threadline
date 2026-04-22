@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
 
+<meta name="viewport" content="width=500, height=280, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<style>
 html, body {
   width: 500px;
   height: 280px;
@@ -11,22 +13,46 @@ html, body {
   overflow: hidden;
 }
 
-iframe {
-  position: absolute; /* instead of fixed */
-  top: 0px;
-  left: 0px;
-  transform: scale(1.67, 1.12);
-  transform-origin: top left; /* important for scaling */
+/* Main fixed canvas */
+.frame {
+  width: 500px;
+  height: 280px;
+  position: relative;
+  overflow: hidden;
 }
-  
+
+/* Wrapper for scaling */
+.ad-wrapper {
+  width: 300px;
+  height: 250px;
+  position: absolute;
+  top: 15px;   /* centers vertically (280 - 250 ≈ 30 / 2) */
+  left: 100px; /* centers horizontally (500 - 300 ≈ 200 / 2) */
+  transform: scale(1.67, 1.12);
+  transform-origin: top left;
+}
+
+/* Clean iframe */
+.ad-wrapper iframe {
+  width: 300px;
+  height: 250px;
+  border: 0;
+  display: block;
+}
 </style>
+
 </head>
 
 <body>
 
-<div id="frame" style="width: 300px;margin: auto;z-index: 99998;height: auto">
-<iframe data-aa='2435262' src='//ad.a-ads.com/2435262/?size=300x250' style='border:0; padding:0; width:300px; height:250px; overflow:hidden;display: block;margin: auto'></iframe>
+<div class="frame">
+  <div class="ad-wrapper">
+    <iframe 
+      data-aa="2435262" 
+      src="//ad.a-ads.com/2435262/?size=300x250">
+    </iframe>
+  </div>
 </div>
-  
+
 </body>
 </html>

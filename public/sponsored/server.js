@@ -164,7 +164,8 @@ app.post('/api/listings', async (req, res) => {
       if (code) listing.code = code;
       if (typeof impressions === 'number') listing.impressions = impressions;
       if (typeof clicks === 'number') listing.clicks = clicks;
-      if (thumbUrl) listing.thumbUrl = thumbUrl;
+      // Always update thumbUrl (even if empty string)
+      listing.thumbUrl = thumbUrl || '';
       await listing.save();
       console.log('Updated listing in MongoDB:', listing);
       console.log(`Listing with placeId ${placeId} and code ${code} was UPDATED in MongoDB.`);
@@ -181,7 +182,7 @@ app.post('/api/listings', async (req, res) => {
         code,
         impressions: typeof impressions === 'number' ? impressions : 0,
         clicks: typeof clicks === 'number' ? clicks : 0,
-        thumbUrl
+        thumbUrl: thumbUrl || ''
       });
       console.log('Created new listing in MongoDB:', listing);
       console.log(`Listing with placeId ${placeId} and code ${code} was ADDED to MongoDB.`);

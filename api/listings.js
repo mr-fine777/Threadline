@@ -135,10 +135,16 @@ async function handler(req, res) {
           }
         } catch (e) {}
         try {
-          const thumbRes = await fetch(`https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeId}&size=768x432&format=Png&isCircular=false`);
-          if (thumbRes.ok) {
-            const thumbData = await thumbRes.json();
-            thumbUrl = thumbData && thumbData.data && thumbData.data[0]?.thumbnails[0]?.imageUrl || '';
+          const iconRes = await fetch(`https://thumbnails.roblox.com/v1/games/icons?universeIds=${universeId}&size=150x150&format=Png&isCircular=false`);
+          if (iconRes.ok) {
+            const iconData = await iconRes.json();
+            const url = iconData && iconData.data && iconData.data[0]?.imageUrl || '';
+            // Only use if it's a real icon (150x150 and not a placeholder)
+            if (url.includes('150/150') && !url.includes('noFilter')) {
+              thumbUrl = url;
+            } else {
+              thumbUrl = '';
+            }
           }
         } catch (e) {}
       }

@@ -29,6 +29,7 @@ const ListingSchema = new mongoose.Schema({
   title: { type: String, default: '' },
   likes: { type: Number, default: 0 },
   code: { type: String, required: true },
+  thumbUrl: { type: String, default: '' },
 }, { collection: 'rbxthread' });
 
 const Listing = mongoose.model('Listing', ListingSchema, 'rbxthread');
@@ -94,7 +95,8 @@ app.post('/api/listings', async (req, res) => {
     } catch (e) {
       console.error('Error fetching universeId:', e);
     }
-    // 2. Get upVotes from votes API and game title from games API
+    // 2. Get upVotes from votes API, game title, and icon from games API
+    let thumbUrl = '';
     if (universeId) {
       // Fetch upVotes and downVotes from votes endpoint
       try {
@@ -133,6 +135,18 @@ app.post('/api/listings', async (req, res) => {
       } catch (e) {
         console.error('Error fetching game title:', e);
       }
+      // Fetch game icon from thumbnails API
+      try {
+        const iconRes = await fetch(`https://thumbnails.roblox.com/v1/games/icons?universeIds=${universeId}&size=150x150&format=Png&isCircular=false`);
+        if (iconRes.ok) {
+          const iconData = await iconRes.json();
+          if (iconData.data && iconData.data[0] && iconData.data[0].imageUrl) {
+            thumbUrl = iconData.data[0].imageUrl;
+          }
+        }
+      } catch (e) {
+        console.error('Error fetching game icon:', e);
+      }
     } else {
       console.log('universeId not found for placeId:', placeId);
     }
@@ -144,6 +158,7 @@ app.post('/api/listings', async (req, res) => {
       if (code) listing.code = code;
       if (typeof impressions === 'number') listing.impressions = impressions;
       if (typeof clicks === 'number') listing.clicks = clicks;
+      if (thumbUrl) listing.thumbUrl = thumbUrl;
       await listing.save();
       console.log('Updated listing in MongoDB:', listing);
       console.log(`Listing with placeId ${placeId} and code ${code} was UPDATED in MongoDB.`);
@@ -159,7 +174,8 @@ app.post('/api/listings', async (req, res) => {
         likes: likePercent,
         code,
         impressions: typeof impressions === 'number' ? impressions : 0,
-        clicks: typeof clicks === 'number' ? clicks : 0
+        clicks: typeof clicks === 'number' ? clicks : 0,
+        thumbUrl
       });
       console.log('Created new listing in MongoDB:', listing);
       console.log(`Listing with placeId ${placeId} and code ${code} was ADDED to MongoDB.`);

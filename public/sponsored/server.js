@@ -142,8 +142,8 @@ app.post('/api/listings', async (req, res) => {
           const iconData = await iconRes.json();
           if (iconData.data && iconData.data[0] && iconData.data[0].imageUrl) {
             const url = iconData.data[0].imageUrl;
-            // Only use if it's a real icon (150x150 and not a placeholder)
-            if (url.includes('150/150') && !url.includes('noFilter')) {
+            // Only use if it's a real icon (150x150)
+            if (url.includes('150/150')) {
               thumbUrl = url;
             } else {
               thumbUrl = '';

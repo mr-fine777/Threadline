@@ -139,8 +139,8 @@ async function handler(req, res) {
           if (iconRes.ok) {
             const iconData = await iconRes.json();
             const url = iconData && iconData.data && iconData.data[0]?.imageUrl || '';
-            // Only use if it's a real icon (150x150 and not a placeholder)
-            if (url.includes('150/150') && !url.includes('noFilter')) {
+            // Only use if it's a real icon (150x150)
+            if (url.includes('150/150')) {
               thumbUrl = url;
             } else {
               thumbUrl = '';

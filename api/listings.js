@@ -155,8 +155,10 @@ async function handler(req, res) {
         if (gameTitle) listing.title = gameTitle;
         listing.likes = likePercent;
         listing.author = author;
-        listing.thumbUrl = thumbUrl;
+        // Only update thumbUrl if we got a new one (avoid overwriting with empty string)
+        if (thumbUrl) listing.thumbUrl = thumbUrl;
         if (code) listing.code = code;
+        // Only update impressions/clicks if explicitly provided, else leave as-is
         if (typeof impressions === 'number') listing.impressions = impressions;
         if (typeof clicks === 'number') listing.clicks = clicks;
         await listing.save();
@@ -168,8 +170,8 @@ async function handler(req, res) {
           title: gameTitle,
           likes: likePercent,
           code,
-          impressions: typeof impressions === 'number' ? impressions : 0,
-          clicks: typeof clicks === 'number' ? clicks : 0,
+          impressions: 0,
+          clicks: 0,
           author,
           thumbUrl
         });

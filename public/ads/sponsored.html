@@ -77,17 +77,13 @@ fetch('https://www.rbxthread.app/api/sponsored')
 			clickFrame.width = 0;
 			clickFrame.height = 0;
 			clickFrame.title = 'clicks';
-			// Always redirect the top-level window (main tab), even if inside an iframe
-			const redirect = () => {
-				if (window.top) {
-					window.top.location.href = gameUrl;
-				} else {
-					window.location.href = gameUrl;
-				}
+			// Open the game in a new tab after registering the click
+			const openInNewTab = () => {
+				window.open(gameUrl, '_blank');
 			};
-			clickFrame.onload = redirect;
-			// Fallback: If iframe doesn't load in 1.5s, redirect anyway
-			setTimeout(redirect, 1500);
+			clickFrame.onload = openInNewTab;
+			// Fallback: If iframe doesn't load in 1.5s, open in new tab anyway
+			setTimeout(openInNewTab, 1500);
 			document.body.appendChild(clickFrame);
 		});
 	});

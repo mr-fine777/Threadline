@@ -481,52 +481,23 @@ function renderListings(listings) {
   });
 }
 
-async function fetchListingsForCode(code) {
+function fetchListingsForCode(code) {
   // Fetch all listings for this code from the API
-  let data = [];
-  try {
-    const res = await fetch(`https://www.rbxthread.app/api/listings?code=${encodeURIComponent(code)}`);
-    data = res.ok ? await res.json() : [];
-  } catch (e) {
-    renderListings([]);
-    return;
-  }
-
-  // For each entry, fetch universeId and then the game icon
-  const listingsWithIcons = await Promise.all(data.map(async entry => {
-    let universeId = null;
-    try {
-      const universeRes = await fetch(`https://apis.roblox.com/universes/v1/places/${entry.placeId}/universe`);
-      if (universeRes.ok) {
-        const universeData = await universeRes.json();
-        universeId = universeData.universeId;
-      }
-    } catch (e) {}
-
-    let thumbUrl = '';
-    if (universeId) {
-      try {
-        const iconRes = await fetch(`https://thumbnails.roblox.com/v1/games/icons?universeIds=${universeId}&size=150x150&format=Png&isCircular=false`);
-        if (iconRes.ok) {
-          const iconData = await iconRes.json();
-          if (iconData.data && iconData.data[0] && iconData.data[0].imageUrl) {
-            thumbUrl = iconData.data[0].imageUrl;
-          }
-        }
-      } catch (e) {}
-    }
-    return {
-      thumbUrl,
-      author: entry.author || '',
-      title: entry.title || '',
-      likes: entry.likes,
-      impressions: entry.impressions || 0,
-      clicks: entry.clicks || 0,
-      ctr: entry.ctr || '',
-      placeId: entry.placeId
-    };
-  }));
-  renderListings(listingsWithIcons);
+  fetch(`https://www.rbxthread.app/api/listings?code=${encodeURIComponent(code)}`)
+    .then(res => res.ok ? res.json() : [])
+    .then(data => {
+      renderListings(data.map(entry => ({
+        thumbUrl: entry.thumbUrl || '',
+        author: entry.author || '',
+        title: entry.title || '',
+        likes: entry.likes,
+        impressions: entry.impressions || 0,
+        clicks: entry.clicks || 0,
+        ctr: entry.ctr || '',
+        placeId: entry.placeId
+      })));
+    })
+    .catch(() => renderListings([]));
 }
 
 function fetchPlaceInfo() {

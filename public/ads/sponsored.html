@@ -71,15 +71,19 @@ fetch('https://www.rbxthread.app/api/sponsored')
 		// On click, add iframe for clicks and wait for it to load before redirect
 		a.addEventListener('click', function(e) {
 			e.preventDefault(); // Prevent immediate navigation
-			// Open the game in a new tab immediately to avoid popup blockers
-			window.open(gameUrl, '_blank');
-			// Fire click tracking in the background
 			const clickFrame = document.createElement('iframe');
 			clickFrame.src = `https://www.rbxthread.app/api/clicks?${entry.placeId}`;
 			clickFrame.style.display = 'none';
 			clickFrame.width = 0;
 			clickFrame.height = 0;
 			clickFrame.title = 'clicks';
+			// Open the game in a new tab after registering the click
+			const openInNewTab = () => {
+				window.open(gameUrl, '_blank');
+			};
+			clickFrame.onload = openInNewTab;
+			// Fallback: If iframe doesn't load in 1.5s, open in new tab anyway
+			setTimeout(openInNewTab, 1500);
 			document.body.appendChild(clickFrame);
 		});
 	});

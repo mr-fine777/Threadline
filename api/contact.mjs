@@ -70,11 +70,15 @@ export default async function handler(req, res) {
       body: JSON.stringify(contactMessage)
     });
     if (!deliveryResponse.ok) {
-      console.error("Contact message delivery failed with status", deliveryResponse.status);
+      const detail = (await deliveryResponse.text()).slice(0, 1000);
+      console.error("Contact message delivery rejected", {
+        status: deliveryResponse.status,
+        detail
+      });
       return respond(res, 502, { error: "We couldn't send your message right now. Please try again later." });
     }
   } catch (error) {
-    console.error("Contact message delivery failed:", error);
+    console.error("Contact message delivery request failed", error?.message || "Unknown network error");
     return respond(res, 502, { error: "We couldn't send your message right now. Please try again later." });
   }
 

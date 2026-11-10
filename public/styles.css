@@ -879,3 +879,37 @@ input:focus, select:focus, textarea:focus { border-color: #a9854d; outline: 3px 
 	.premium-gallery { flex-wrap: wrap; }
 	.premium-gallery-pair img { width: calc(50% - 8px); }
 }
+
+/* Premium landing page */
+#terms-privacy:has(.premium-hero) {
+	width: min(1040px, calc(100% - 40px));
+	padding: clamp(24px, 5vw, 56px);
+	border-radius: 20px;
+}
+.premium-hero {
+	position: relative;
+	text-align: center;
+	padding: clamp(28px, 6vw, 64px) 24px;
+	margin: -8px -8px 34px;
+	border-radius: 16px;
+	background: radial-gradient(ellipse at 50% 0%, #fff8e8 0, #f8f3ec 62%, #f3eee7 100%);
+	border: 1px solid #e8ddcc;
+}
+.premium-eyebrow { color: #80653f !important; font-size: 12px; font-weight: 750; letter-spacing: .18em; margin: 0 0 14px; }
+.premium-hero h1 { margin: 0; font-size: clamp(36px, 6vw, 58px) !important; }
+.premium-lede { max-width: 600px; margin: 16px auto 22px; font-size: clamp(16px, 2vw, 19px); }
+.premium-price { display: flex; align-items: baseline; justify-content: center; gap: 10px; margin: 0 0 22px; color: #5d5660; }
+.premium-price strong { color: #4a3153; font-size: 20px; }
+.premium-cta, .premium-bottom-cta .btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 13px 22px; color: #fffaf1 !important; background: #4d3157; border-radius: 10px; font-weight: 700; text-decoration: none; box-shadow: 0 8px 20px rgba(65, 40, 72, .16); }
+.premium-cta:hover, .premium-bottom-cta .btn:hover { background: #61456b; }
+.premium-intro { max-width: 780px; margin: 0 auto 34px; font-size: 17px; text-align: center; }
+.legal section > h2 { margin: 42px 0 12px; padding-top: 22px; border-top: 1px solid #e9e0d4; }
+.legal section > h2:first-of-type { margin-top: 24px; }
+.premium-gallery { box-shadow: 0 8px 24px rgba(47,36,50,.06); }
+.premium-bottom-cta { justify-content: center; margin: 28px 0 0; padding-top: 26px; border-top: 1px solid #e9e0d4; }
+@media (max-width: 720px) {
+	#terms-privacy:has(.premium-hero) { width: calc(100% - 28px) !important; padding: 18px; }
+	.premium-hero { padding: 32px 16px; margin: 0 0 26px; }
+	.premium-price { flex-direction: column; align-items: center; gap: 2px; }
+	.premium-intro { text-align: left; }
+}

@@ -1,6 +1,6 @@
 const MAX_LENGTHS = {
+  name: 120,
   email: 254,
-  accessCode: 120,
   subject: 160,
   message: 4000
 };
@@ -22,7 +22,7 @@ function cleanField(value) {
 export default {
   async fetch(request) {
     if (request.method !== "POST") {
-      return jsonResponse(405, { error: "Please use the contact form to send a message." });
+      return jsonResponse(405, { error: "Use the contact form to send a message." });
     }
 
     let webhookUrl;
@@ -49,30 +49,30 @@ export default {
       return jsonResponse(400, { error: "Please submit the contact form again." });
     }
 
+    const name = cleanField(body.name);
     const email = cleanField(body.email);
-    const accessCode = cleanField(body.accessCode);
     const subject = cleanField(body.subject);
     const message = cleanField(body.message);
     const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (
+      !name || name.length > MAX_LENGTHS.name ||
       !emailIsValid || email.length > MAX_LENGTHS.email ||
-      accessCode.length > MAX_LENGTHS.accessCode ||
       !subject || subject.length > MAX_LENGTHS.subject ||
       !message || message.length > MAX_LENGTHS.message
     ) {
       return jsonResponse(422, { error: "Please check the required fields and try again." });
     }
 
-    const contactMessage = {
-      username: "Threadline Contact Form",
+    const discordMessage = {
+      username: "BareArms Contact Form",
       allowed_mentions: { parse: [] },
       embeds: [{
-        title: "New Threadline contact message",
-        color: 0x382b43,
+        title: "New BareArms contact message",
+        color: 0x44788b,
         description: message,
         fields: [
+          { name: "Name", value: name, inline: true },
           { name: "Email", value: email, inline: true },
-          { name: "Threadline Access Code", value: accessCode || "Not provided", inline: true },
           { name: "Subject", value: subject, inline: false }
         ],
         timestamp: new Date().toISOString()
@@ -80,18 +80,16 @@ export default {
     };
 
     try {
-      const deliveryResponse = await fetch(webhookUrl, {
+      const discordResponse = await fetch(webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(contactMessage)
+        body: JSON.stringify(discordMessage)
       });
-      if (!deliveryResponse.ok) {
-        console.error("Contact delivery failed with status", deliveryResponse.status);
-        return jsonResponse(502, { error: "We couldn't send your message right now. Please try again later." });
+      if (!discordResponse.ok) {
+        return jsonResponse(502, { error: "Discord could not receive your message. Please try again later." });
       }
-    } catch (error) {
-      console.error("Contact delivery request failed:", error?.message || "Unknown network error");
-      return jsonResponse(502, { error: "We couldn't send your message right now. Please try again later." });
+    } catch {
+      return jsonResponse(502, { error: "Discord could not receive your message. Please try again later." });
     }
 
     return jsonResponse(200, { ok: true });

@@ -30,6 +30,7 @@
 <meta name="twitter:site" content="@ThreadlineApp">
 <style>
   .download-iframe-hero {
+    position: relative;
     width: 100vw;
     height: 100vh;
     min-height: 420px;
@@ -47,7 +48,7 @@
   }
   .download-iframe-hero iframe {
     width: 100vw;
-    height: 100vh;
+    height: 100%;
     border: none;
     border-radius: 0;
     margin: 0;
@@ -55,7 +56,16 @@
     background: transparent;
     display: block;
   }
-	  
+  .iframe-scroll-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: transparent;
+    cursor: default;
+  }
+  .iframe-scroll-overlay.is-click-through {
+    pointer-events: none;
+  }
   .beholder {
     visibility: hidden !important;
   }
@@ -198,7 +208,7 @@
                         <a class="menu-link" href="index.html">Download Classic Clothing</a>
                         <a class="menu-link" href="avatar-corrector.html">Avatar Corrector</a>
                         <a class="menu-link" href="premium.html">Get Premium</a>
-                        <a class="menu-link" href="https://www.rbxthread.app/sponsored/menu">Sponsored Listings</a>
+                        <a class="menu-link" href="https://www.rbxthread.app/premium">Download UGC</a>
                     </div>
                 </td>
                 <td>
@@ -263,8 +273,55 @@
 })();
 </script>
 <div class="download-iframe-hero">
-  <iframe src="https://rbxthread.vercel.app/" allowtransparency="true" scrolling="no "id="windowed"></iframe>
+  <iframe src="https://rbxthread.vercel.app/" allowtransparency="true" scrolling="auto" id="windowed" title="Threadline clothing template downloader"></iframe>
+  <div class="iframe-scroll-overlay" id="iframeScrollOverlay" aria-label="Click to interact with the downloader" title="Click to interact with the downloader"></div>
 </div>
+<script>
+  (function () {
+    const overlay = document.getElementById('iframeScrollOverlay');
+    const frame = document.getElementById('windowed');
+    if (!overlay || !frame) return;
+
+    function enablePageScroll() {
+      overlay.classList.remove('is-click-through');
+    }
+
+    // The overlay lets wheel gestures scroll the parent page. Click once to
+    // pass pointer input through to the cross-origin downloader iframe.
+    overlay.addEventListener('wheel', function () {
+      enablePageScroll();
+    }, { passive: true });
+
+    overlay.addEventListener('click', function () {
+      overlay.classList.add('is-click-through');
+    });
+
+    // Capture wheel input anywhere in the parent document, including nested
+    // elements, and restore the overlay after the pointer leaves the frame.
+    document.addEventListener('wheel', enablePageScroll, { capture: true, passive: true });
+    frame.addEventListener('mouseleave', enablePageScroll);
+
+    // The embedded app forwards wheel input because cross-origin iframe events
+    // do not bubble into this document.
+    const frameOrigin = new URL(frame.src, window.location.href).origin;
+    window.addEventListener('message', function (event) {
+      if (event.source !== frame.contentWindow || event.origin !== frameOrigin) return;
+      if (!event.data || event.data.type !== 'threadline:iframe-wheel') return;
+
+      enablePageScroll();
+      let deltaY = Number(event.data.deltaY);
+      const deltaMode = Number(event.data.deltaMode);
+      if (deltaMode === 1) deltaY *= 16;
+      if (deltaMode === 2) deltaY *= window.innerHeight;
+      if (Number.isFinite(deltaY) && deltaY !== 0) window.scrollBy(0, deltaY);
+    });
+
+    // A page scroll outside the iframe returns the overlay to scroll mode.
+    window.addEventListener('scroll', function () {
+      enablePageScroll();
+    }, { passive: true });
+  })();
+</script>
 <div class="bottom-flex">
 </div>
 
@@ -337,14 +394,14 @@
         <p><strong>Threadline Premium gives you the ultimate design freedom for just $3.99/month. Enjoy a completely ad-free experience, customize your Roblox template workspace with your own background images, and export your templates without the Threadline watermark. Upgrade today and create without limits. All for only $3.99 a month!</strong></p>
         <h2><strong>How to implement</strong></h2>
         <p>To implement Threadline Premium, go on your browser with Threadline installed and click on the lock icon, from there it will copy your threadline access code. Then go to the button on the bottom of the page, and paste it in the "Threadline Access Code" box.</p>
-  <div style="display: flex;margin: 0 auto;justify-content: center;gap: 50px;background-color: #351148;max-width: 50%;padding: 20px;border: 2px solid #f4ce6e;border-radius: 8px;">
-		<img src="img/thread1.png" style="height: auto; width: 100%;"><img src="img/thread2.png" style="height: auto;  width: 100%;">
+  <div class="premium-gallery premium-gallery-pair">
+		<img src="img/thread1.png" alt="Threadline extension example"><img src="img/thread2.png" alt="Threadline extension example">
   </div>
         <p>And our API will handle the rest, enjoy never seeing ads again, custom templates, and much more!</p>
         <h2><strong>Custom Templates</strong></h2>
         <p>One of my most asked question is what do you mean by a custom template? Well upon downloading a Roblox Classic Clothing template with Threadline, you receive a watermarked image. Instead of having the watermarked template, why not have your own custom template for all clothes you upload? Never worry about incorrect positioning, layering, or even opening up an image editor for that matter, simply use our custom template system, upload absolutely any image, and viola, every single shirt you download will have the template you uploaded forever, unless you want to change it, and if you do just click the upload button like usual, and viola.</p>
-		<div style="display: flex;margin: 0 auto;justify-content: center;gap: 50px;background-color: #351148;max-width: 65%;padding: 40px;border: 2px solid #f4ce6e;border-radius: 8px;">
-		<img src="img/process.png" style="height: auto;  width: 100%;">
+		<div class="premium-gallery premium-gallery-process">
+		<img src="img/process.png" alt="Custom clothing template process">
   </div>
         <p> How to upload it is a different question, the main thing is dependant on your browser, it's more or less the same. Click the Upload button after you've subscribed to Threadline Premium. From there if you're on Chrome, an upload file box will appear, and you will upload whatever picture you want. If you're on Firefox, a new tab will appear that will let you upload whatever picture you want.
         <h2><strong>Sponsored Listings</strong></h2>
@@ -466,7 +523,7 @@
 </div>
 <!-- FAQ DROPDOWN SECTION START -->
 <div class="article-card faq-dropdown-section">
-  <h2 style="text-align:center; color:#f4ce6e; margin-bottom: 24px;">Frequently Asked Questions</h2>
+  <h2>Frequently Asked Questions</h2>
   <div class="faq-dropdown-list">
     <div class="faq-item">
       <div class="faq-question">How can you download Roblox clothes for free?</div>

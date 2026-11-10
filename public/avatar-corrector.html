@@ -50,32 +50,33 @@ observer.observe(document.documentElement, {
     visibility: hidden !important;
   }
 	
-  .download-iframe-hero {
-    width: 100vw;
-    height: 100vh;
-    min-height: 420px;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
-    background-color: #351148;
-    border: none;
-    box-shadow: 0 4px 24px 0 rgba(83,33,110,0.10);
-    border-radius: 0;
-    overflow: hidden;
-    border-bottom: 2px solid #f4ce6e;
-  }
-  .download-iframe-hero iframe {
-    width: 100vw;
-    height: 100vh;
-    border: none;
-    border-radius: 0;
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    display: block;
-  }
+.avatar-corrector-embed {
+	position: fixed;
+	top: var(--header-offset);
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: auto;
+	margin: 0;
+	background: #f7f4ef;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	overflow: hidden;
+}
+.avatar-corrector-embed iframe {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	background: #f7f4ef;
+	display: block;
+}
+@media (max-width: 720px) {
+	.avatar-corrector-embed { top: var(--header-offset); width: 100%; height: auto; margin: 0; border-radius: 0; }
+}
 </style>
   
 <!-- Google tag (gtag.js) -->
@@ -125,7 +126,7 @@ observer.observe(document.documentElement, {
                         <a class="menu-link" href="index.html">Download Classic Clothing</a>
                         <a class="menu-link" href="avatar-corrector.html">Avatar Corrector</a>
                         <a class="menu-link" href="premium.html">Get Premium</a>
-                        <a class="menu-link" href="https://www.rbxthread.app/sponsored/menu">Sponsored Listings</a>
+                        <a class="menu-link" href="https://www.rbxthread.app/premium">Download UGC</a>
                     </div>
                 </td>
                 <td>
@@ -189,8 +190,8 @@ observer.observe(document.documentElement, {
     });
 })();
 </script>
-<div class="download-iframe-hero">
-  <iframe src="https://avatars-gules.vercel.app/" title="Avatar Corrector" allowtransparency="true" scrolling="no" id="windowed"></iframe>
+<div class="avatar-corrector-embed">
+  <iframe src="https://avatars-gules.vercel.app/" title="Avatar Corrector" allowtransparency="true" scrolling="auto" id="windowed"></iframe>
 </div>
 </body>
 </html>

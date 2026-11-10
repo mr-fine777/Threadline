@@ -7,30 +7,30 @@ const MAX_LENGTHS = {
 
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1569775755427184741/K8Lsm64B_H1Rqu9rKBQf6nCm0POxwlrObTvAAOXx-JMergD1-jnIAFTRZg-qWuvmBGwT0";
 
-function respond(res, status, body) {
-  return res.status(status).setHeader("Cache-Control", "no-store").json(body);
+function respond(status, body, headers = {}) {
+  return Response.json(body, {
+    status,
+    headers: { "Cache-Control": "no-store", ...headers }
+  });
 }
 
 function cleanField(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return respond(res, 405, { error: "Please use the contact form to send a message." });
+export default async function handler(request) {
+  if (request.method !== "POST") {
+    return respond(405, { error: "Please use the contact form to send a message." }, { Allow: "POST" });
   }
 
-  let body = req.body;
-  if (typeof body === "string") {
-    try {
-      body = JSON.parse(body);
-    } catch {
-      return respond(res, 400, { error: "Please submit the contact form again." });
-    }
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return respond(400, { error: "Please submit the contact form again." });
   }
   if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return respond(res, 400, { error: "Please submit the contact form again." });
+    return respond(400, { error: "Please submit the contact form again." });
   }
 
   const email = cleanField(body.email);
@@ -44,7 +44,7 @@ export default async function handler(req, res) {
     !subject || subject.length > MAX_LENGTHS.subject ||
     !message || message.length > MAX_LENGTHS.message
   ) {
-    return respond(res, 422, { error: "Please check the required fields and try again." });
+    return respond(422, { error: "Please check the required fields and try again." });
   }
 
   const contactMessage = {
@@ -75,12 +75,12 @@ export default async function handler(req, res) {
         status: deliveryResponse.status,
         detail
       });
-      return respond(res, 502, { error: "We couldn't send your message right now. Please try again later." });
+      return respond(502, { error: "We couldn't send your message right now. Please try again later." });
     }
   } catch (error) {
     console.error("Contact message delivery request failed", error?.message || "Unknown network error");
-    return respond(res, 502, { error: "We couldn't send your message right now. Please try again later." });
+    return respond(502, { error: "We couldn't send your message right now. Please try again later." });
   }
 
-  return respond(res, 200, { ok: true });
+  return respond(200, { ok: true });
 }

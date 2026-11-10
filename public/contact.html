@@ -26,39 +26,15 @@
     margin: 0 auto;
 }
 
-#access_code {
-    width: 80%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    box-sizing: border-box;
-    border: 2px solid #f4ce6e;
-    border-radius: 4px;
-    background-color: #fff;
-    color: #53216e;
-    text-align: center;
-    font-size: 16px;
-}
-
-#login-button-ros {
-    background-color: #53216e;
-    border: 2px solid #f4ce6e;
-    color: #f4ce6e;
-    padding: 12px 24px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 8px 0;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.contact-form { max-width: 640px; margin: 0 auto; text-align: left; }
-.contact-form label { display: block; margin: 14px 0 6px; color: #f4ce6e; }
-.contact-form input, .contact-form textarea { width: 100%; padding: 12px; box-sizing: border-box; border: 2px solid #f4ce6e; border-radius: 4px; font: inherit; }
-.contact-form textarea { min-height: 160px; resize: vertical; }
-.contact-form button { background: #53216e; border: 2px solid #f4ce6e; color: #f4ce6e; padding: 12px 24px; border-radius: 4px; cursor: pointer; font: inherit; margin-top: 14px; }
-#contact-status { min-height: 1.5em; }
+.contact-form { max-width: 680px; margin: 26px auto 0; text-align: left; }
+.contact-form label { display: block; margin: 18px 0 7px; color: var(--plum, #382b43); font-size: 14px; font-weight: 650; }
+.contact-form input, .contact-form textarea { display: block; width: 100%; padding: 12px 14px; box-sizing: border-box; border: 1px solid var(--line, #e6ded2); border-radius: 8px; background: var(--surface, #fffdfa); color: var(--ink, #29232e); font: inherit; transition: border-color .18s ease, box-shadow .18s ease; }
+.contact-form input:focus, .contact-form textarea:focus { border-color: var(--plum, #382b43); outline: 3px solid rgba(56,43,67,.12); }
+.contact-form textarea { min-height: 170px; resize: vertical; }
+.contact-form button { display: inline-flex; align-items: center; justify-content: center; margin-top: 20px; padding: 11px 22px; border: 1px solid var(--plum, #382b43); border-radius: 9px; background: var(--plum, #382b43); box-shadow: none; color: #fffaf1; font: inherit; font-size: 15px; font-weight: 650; cursor: pointer; transition: background .18s ease, transform .18s ease; }
+.contact-form button:hover { background: var(--plum-soft, #493653); transform: translateY(-1px); }
+.contact-form button:disabled { opacity: .65; cursor: wait; transform: none; }
+#contact-status { min-height: 1.5em; color: var(--muted, #716a75); }
 
 </style>
 

@@ -2,6 +2,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
+    { "source": "/api/contact", "destination": "/api/contact.mjs" },
     { "source": "/api/listings", "destination": "/api/listings.js" },
     { "source": "/api/listings/:match*", "destination": "/api/listings.js" },
     { "source": "/api/sponsored", "destination": "/api/sponsored.js" },

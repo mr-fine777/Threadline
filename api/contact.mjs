@@ -86,11 +86,18 @@ export default {
         body: JSON.stringify(contactMessage)
       });
       if (!deliveryResponse.ok) {
-        console.error("Contact delivery failed with status", deliveryResponse.status);
+        const detail = (await deliveryResponse.text()).slice(0, 1000);
+        console.error("Contact delivery was rejected", {
+          status: deliveryResponse.status,
+          detail
+        });
         return jsonResponse(502, { error: "We couldn't send your message right now. Please try again later." });
       }
     } catch (error) {
-      console.error("Contact delivery request failed:", error?.message || "Unknown network error");
+      console.error("Contact delivery request failed", {
+        name: error?.name || "Error",
+        message: error?.message || "Unknown network error"
+      });
       return jsonResponse(502, { error: "We couldn't send your message right now. Please try again later." });
     }
 

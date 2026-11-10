@@ -189,15 +189,11 @@
                 try {
                     const response = await fetch('/api/contact', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            email: fields.get('email'),
-                            accessCode: fields.get('accessCode'),
-                            subject: fields.get('subject'),
-                            message: fields.get('message')
-                        })
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        credentials: 'same-origin',
+                        body: JSON.stringify(Object.fromEntries(fields))
                     });
-                    const result = await response.json();
+                    const result = await response.json().catch(function () { return {}; });
                     if (!response.ok) throw new Error(result.error || 'Your message could not be sent. Please try again later.');
                     localStorage.setItem(storageKey, String(Date.now()));
                     form.reset();

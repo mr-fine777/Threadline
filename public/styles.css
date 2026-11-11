@@ -14,38 +14,9 @@
 	color: #f4ce6e;
 	margin-bottom: 24px;
 }
-
 .faq-dropdown-list {
 	width: 100%;
 }
-
-::-webkit-scrollbar {
-    width: 0px;
-}
-
-html {
-    scrollbar-width: none;
-	height: 100%;
-}
-
-::-webkit-scrollbar-track {
-    background-color: #431d58; 
-}
- 
-::-webkit-scrollbar-thumb {
-    background: #f4ce6e; 
-    border: 2px solid #431d58
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #f4ce6e; 
-    border-radius: 8px;
-}
-
-* {
-	user-select: none;
-}
-
 .faq-item {
 	margin-bottom: 12px;
 	border-bottom: 1px solid #f4ce6e;
@@ -102,6 +73,31 @@ html {
 /* Use border-box everywhere for consistent sizing */
 *, *::before, *::after {
 	box-sizing: border-box;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background-color: #431d58; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #f4ce6e; 
+  border: 2px solid #431d58
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #f4ce6e; 
+}
+
+html {
+	height: 100%;
 }
 
 .performer {
@@ -917,3 +913,12 @@ input:focus, select:focus, textarea:focus { border-color: #a9854d; outline: 3px 
 	.premium-price { flex-direction: column; align-items: center; gap: 2px; }
 	.premium-intro { text-align: left; }
 }
+
+/* Accessibility and narrow-screen layout */
+.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+img{max-width:100%;height:auto}
+@media(max-width:600px){.download-iframe-hero{height:78svh;min-height:520px}.download-iframe-hero iframe{width:100%;min-height:100%}.header-dropdown button{min-width:44px;min-height:44px}.menu-link{display:block;min-height:44px;padding:10px;box-sizing:border-box}}
+
+.article-body{max-width:78ch;margin-inline:auto}.article-body p{margin:0 0 1.15em;line-height:1.8}.article-body h2{margin:1.8em 0 .6em;color:var(--plum);font-size:clamp(21px,3vw,28px);line-height:1.25}.blog-page-title{max-width:1120px;margin:20px auto;color:#fff;font-size:clamp(30px,5vw,44px)}
+
+.article-byline{margin:0 0 22px;color:#716a75;font-size:14px}

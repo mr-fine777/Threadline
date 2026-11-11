@@ -1,0 +1,22 @@
+# Threadline
+
+> Threadline provides tools and information for Roblox classic clothing creators.
+
+## Main pages
+- [Home and clothing downloader](https://www.rbxthread.app/)
+- [Blog](https://www.rbxthread.app/blog.html)
+- [Avatar Corrector](https://www.rbxthread.app/avatar-corrector.html)
+- [Premium](https://www.rbxthread.app/premium.html)
+- [Changelog](https://www.rbxthread.app/changelog.html)
+- [Contact](https://www.rbxthread.app/contact.html)
+- [Terms and privacy](https://www.rbxthread.app/tos.html)
+
+## Blog articles
+- [How To Download Classic Roblox Clothing For Free](https://www.rbxthread.app/posts.html?slug=how-to-download-classic-roblox-clothing-for-free)
+- [How To Test Your Roblox Clothes Without Wasting Robux](https://www.rbxthread.app/posts.html?slug=how-to-test-your-roblox-clothes-without-wasting-robux)
+- [A Safer Way to Access a Roblox Group's Classic Clothing](https://www.rbxthread.app/posts.html?slug=a-safer-way-to-access-a-roblox-groups-classic-clothing)
+- [How To Get Your Group To Reach New Members On Roblox](https://www.rbxthread.app/posts.html?slug=how-to-get-your-group-to-reach-new-members-on-roblox)
+
+## Crawl guidance
+- Sitemap: https://www.rbxthread.app/sitemap.xml
+- Blog article content is stored in the public blog feed and rendered on each article URL.

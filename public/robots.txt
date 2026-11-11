@@ -2,3 +2,8 @@ User-agent: *
 Allow: /
 
 Sitemap: https://www.rbxthread.app/sitemap.xml
+
+# Additional machine-readable site guide
+
+User-agent: *
+Allow: /llms.txt

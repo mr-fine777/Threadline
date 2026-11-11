@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <url>
-    <loc>https://www.rbxthread.app/</loc>
-    <lastmod>2026-04-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-
-  <url>
-    <loc>https://www.rbxthread.app/blog/</loc>
-    <lastmod>2026-04-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
+  <url><loc>https://www.rbxthread.app/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.rbxthread.app/blog.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.rbxthread.app/avatar-corrector.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.rbxthread.app/premium.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.rbxthread.app/changelog.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.rbxthread.app/contact.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.rbxthread.app/tos.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.rbxthread.app/posts.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.rbxthread.app/posts.html?slug=how-to-download-classic-roblox-clothing-for-free</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.rbxthread.app/posts.html?slug=how-to-test-your-roblox-clothes-without-wasting-robux</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.rbxthread.app/posts.html?slug=a-safer-way-to-access-a-roblox-groups-classic-clothing</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.rbxthread.app/posts.html?slug=how-to-get-your-group-to-reach-new-members-on-roblox</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.rbxthread.app/ad-safety.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 </urlset>

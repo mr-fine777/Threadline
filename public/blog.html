@@ -1,21 +1,14 @@
 <!DOCTYPE html>
-<html><head>
+<html lang="en"><head>
 
 	
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-TYNRY2CSXL"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-TYNRY2CSXL');
-</script>
 
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Threadline</title>
+    <title>Threadline Blog | Roblox Clothing Creator Guides</title>
+<meta name="description" content="Guides and practical tips for Roblox classic clothing creators, template workflows, avatar previews, and Threadline updates.">
     <link rel="icon" href="img/iconic.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
 <style> 
@@ -34,13 +27,14 @@
 }
 
 </style>
+    <link rel="stylesheet" href="cookie-consent.css">
 </head>
 
-<body>
+<body data-ga-id="G-TYNRY2CSXL">
 <div class="container">
   <div class="logo">
     <a href="index.html">
-      <img src="img/img.png" style="max-height: 75px; user-select: none;">
+      <img src="img/img.png" alt="Threadline" style="max-height: 75px; user-select: none;">
     </a>
   </div>
         <div class="header-dropdown">
@@ -82,6 +76,7 @@
                         <a class="menu-link" href="tos.html#privacy">Privacy</a>
                         <a class="menu-link" href="tos.html#terms">Terms</a>
                         <a class="menu-link" href="contact.html">Contact</a>
+                        <a class="menu-link" href="ad-safety.html">Ad Safety</a>
                     </div>
                 </td>
             </tr>
@@ -135,6 +130,7 @@
 <div class="performer">
 <div class="post-container-menu">
 <main id="posts">
+<h1 class="blog-page-title">Threadline Blog</h1>
 
 </main>
 </div>
@@ -142,11 +138,11 @@
 <div class="bottom-flex">
 </div>
 
-<div class="footer-main">
+<footer class="footer-main">
   <div class="footer-holster">
     <div class="footer-left">
       <a href="index.html">
-        <img src="img/img.png" style="max-height: 60px; user-select: none;">
+        <img src="img/img.png" alt="Threadline" style="max-height: 60px; user-select: none;">
       </a>
         <p id="rights">© 2026 Threadline. All rights reserved.</p>
     </div>
@@ -154,9 +150,10 @@
       <a class="footer-link" href="index.html#about">About</a>
       <a class="footer-link" href="blog.html">Blog</a>
       <a class="footer-link" href="changelog.html">Changelog</a>
-      <a class="footer-link" href="tos.html#privacy">Privacy</a>
+      <a class="footer-link" href="https://www.instagram.com/rbx.threadline/" target="_blank" rel="noopener noreferrer">Instagram</a>
       <a class="footer-link" href="tos.html#terms">Terms</a>
       <a class="footer-link" href="contact.html">Contact</a>
+      <a class="footer-link" href="ad-safety.html">Ad Safety</a>
     </div>
   </div>
 </div>
@@ -171,7 +168,7 @@
     const data = await res.json();
     const posts = data && data.BlogPosts ? data.BlogPosts : [];
     posts.forEach(post => {
-      const postDiv = document.createElement('div');
+      const postDiv = document.createElement('article');
       postDiv.className = 'blogpost';
 
       // Make the whole blogpost clickable
@@ -194,7 +191,7 @@
       const contentDiv = document.createElement('div');
       contentDiv.className = 'blogpost-content';
 
-      const h1 = document.createElement('h1');
+      const h1 = document.createElement('h2');
       h1.textContent = post.title || '';
       contentDiv.appendChild(h1);
 
@@ -241,5 +238,6 @@
 })();
 </script>
 
+<script src="cookie-consent.js" defer></script>
 </body>
 </html>

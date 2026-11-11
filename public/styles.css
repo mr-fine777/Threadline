@@ -682,6 +682,7 @@ input:focus, select:focus, textarea:focus { border-color: #a9854d; outline: 3px 
 ::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid var(--plum-deep); border-radius: 8px; }
 
 .container {
+	box-sizing: border-box;
 	min-height: 88px;
 	padding: 10px clamp(20px, 5vw, 72px);
 	background: rgba(44, 34, 53, .97);
@@ -916,7 +917,7 @@ input:focus, select:focus, textarea:focus { border-color: #a9854d; outline: 3px 
 .visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 img{max-width:100%;height:auto}
 @media(max-width:600px){
-  .download-iframe-hero{height:clamp(340px,56svh,440px);min-height:0}
+  .download-iframe-hero{height:calc(100dvh - var(--header-offset, 76px));min-height:0}
   .download-iframe-hero iframe{width:100%;height:100%;min-height:0}
   .header-dropdown button{min-width:44px;min-height:44px}
   .subheader-menu.open{max-height:min(72dvh,calc(100dvh - var(--header-offset) - 12px));overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}

@@ -689,7 +689,6 @@ input:focus, select:focus, textarea:focus { border-color: #a9854d; outline: 3px 
 	box-shadow: 0 8px 24px rgba(32, 24, 38, .12);
 	backdrop-filter: blur(14px);
 }
-.logo img { max-height: 58px !important; }
 .btn, button { color: #f4e5c4; text-shadow: none; }
 .btn { font-size: 16px; border: 1px solid transparent; border-radius: 8px; transition: background .18s ease, border-color .18s ease, color .18s ease; }
 .btn:hover { background: rgba(255,255,255,.08); border-color: rgba(244,229,196,.22); }
@@ -765,7 +764,6 @@ input:focus, select:focus, textarea:focus { border-color: #a9854d; outline: 3px 
 @media (max-width: 720px) {
 	.container { min-height: 76px; padding: 8px 18px; }
 	:root { --header-offset: 76px; }
-	.logo img { max-height: 50px !important; }
 	.space-between { margin-top: 96px; }
 	.performer { width: calc(100% - 28px); }
 	.menu-table { width: calc(100% - 24px); margin: 8px 12px; }

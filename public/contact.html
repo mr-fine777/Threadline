@@ -164,6 +164,27 @@
         (function () {
             const form = document.getElementById('contact-form');
             const status = document.getElementById('contact-status');
+            function populateAccessCode() {
+                const hashParams = new URLSearchParams(window.location.hash.slice(1));
+                const queryParams = new URLSearchParams(window.location.search);
+                const accessCode = hashParams.get('accessCode') || queryParams.get('accessCode');
+                if (accessCode) {
+                    document.getElementById('access-code').value = accessCode;
+                }
+
+                if (hashParams.has('accessCode')) {
+                    hashParams.delete('accessCode');
+                    const remainingHash = hashParams.toString();
+                    history.replaceState(null, '', window.location.pathname + window.location.search + (remainingHash ? '#' + remainingHash : ''));
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', populateAccessCode, { once: true });
+            } else {
+                populateAccessCode();
+            }
+
             const storageKey = 'threadlineContactLastSent';
             const limitMs = 12 * 60 * 60 * 1000;
 
